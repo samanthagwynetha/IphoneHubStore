@@ -3,7 +3,7 @@ import SimilarProducts from '@/components/frontend/SimillarProducts';
 import ShopFrontLayout from '@/layouts/shop-front-layout';
 import { SimilarProduct } from '@/types/products';
 // ProductDetail.tsx
-import { Check, ChevronRight, Heart, Share2, ShoppingCart, Star } from 'lucide-react';
+import { Check, ChevronRight, Heart, Share2, ShoppingCart } from 'lucide-react';
 
 import { useState } from 'react';
 
@@ -18,87 +18,85 @@ interface Product {
     description: string;
     features: string[];
     images: string[];
-    colors: {
-        name: string;
-        value: string;
-    }[];
+    colors: string[];
     sizes: string[];
     inStock: boolean;
 }
 
-// Mock data
-const product: Product = {
-    id: 'prod-001',
-    name: 'Premium Ergonomic Office Chair',
-    price: 349.99,
-    originalPrice: 499.99,
-    rating: 4.8,
-    reviewCount: 254,
-    description:
-        'Experience unparalleled comfort with our Premium Ergonomic Office Chair, designed to provide optimal support during long working hours. Featuring adjustable lumbar support, breathable mesh back, and premium cushioning, this chair is the perfect blend of style and functionality for your workspace.',
-    features: [
-        'Adjustable height and armrests',
-        'Breathable mesh back with lumbar support',
-        'Premium cushioning with memory foam',
-        '360° swivel with smooth-rolling casters',
-        'Weight capacity up to 300 lbs',
-        'Eco-friendly materials',
-    ],
-    images: [
-        'https://images.unsplash.com/photo-1580480055273-228ff5388ef8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-        'https://images.unsplash.com/photo-1505843490538-5133c6c7d0e1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-        'https://images.unsplash.com/photo-1589384267710-7a170981ca78?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-        'https://images.unsplash.com/photo-1578500494198-246f612d3b3d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-    ],
-    colors: [
-        { name: 'Classic Black', value: '#000000' },
-        { name: 'Platinum Gray', value: '#8e8e8e' },
-        { name: 'Navy Blue', value: '#15317E' },
-        { name: 'Burgundy', value: '#8C001A' },
-    ],
-    sizes: ['Standard', 'Large', 'Extra Large'],
-    inStock: true,
-};
+// // Mock data
+// const product: Product = {
+//     id: 'prod-001',
+//     name: 'Premium Ergonomic Office Chair',
+//     price: 349.99,
+//     originalPrice: 499.99,
+//     rating: 4.8,
+//     reviewCount: 254,
+//     description:
+//         'Experience unparalleled comfort with our Premium Ergonomic Office Chair, designed to provide optimal support during long working hours. Featuring adjustable lumbar support, breathable mesh back, and premium cushioning, this chair is the perfect blend of style and functionality for your workspace.',
+//     features: [
+//         'Adjustable height and armrests',
+//         'Breathable mesh back with lumbar support',
+//         'Premium cushioning with memory foam',
+//         '360° swivel with smooth-rolling casters',
+//         'Weight capacity up to 300 lbs',
+//         'Eco-friendly materials',
+//     ],
+//     images: [
+//         'https://images.unsplash.com/photo-1580480055273-228ff5388ef8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+//         'https://images.unsplash.com/photo-1505843490538-5133c6c7d0e1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+//         'https://images.unsplash.com/photo-1589384267710-7a170981ca78?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+//         'https://images.unsplash.com/photo-1578500494198-246f612d3b3d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+//     ],
+//     colors: [
+//         { name: 'Classic Black', value: '#000000' },
+//         { name: 'Platinum Gray', value: '#8e8e8e' },
+//         { name: 'Navy Blue', value: '#15317E' },
+//         { name: 'Burgundy', value: '#8C001A' },
+//     ],
+//     sizes: ['Standard', 'Large', 'Extra Large'],
+//     inStock: true,
+// };
 
-const similarProducts: SimilarProduct[] = [
-    {
-        id: 'prod-002',
-        name: 'Executive High-Back Office Chair',
-        price: 299.99,
-        rating: 4.6,
-        reviewCount: 187,
-        image: 'https://images.unsplash.com/photo-1579656381226-5fc0f0100c3b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-    },
-    {
-        id: 'prod-003',
-        name: 'Modern Ergonomic Task Chair',
-        price: 249.99,
-        rating: 4.5,
-        reviewCount: 142,
-        image: 'https://images.unsplash.com/photo-1589384267710-7a170981ca78?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-    },
-    {
-        id: 'prod-004',
-        name: 'Designer Mesh Office Chair',
-        price: 279.99,
-        rating: 4.7,
-        reviewCount: 213,
-        image: 'https://images.unsplash.com/photo-1578500494198-246f612d3b3d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-    },
-    {
-        id: 'prod-005',
-        name: 'Luxury Leather Executive Chair',
-        price: 399.99,
-        rating: 4.9,
-        reviewCount: 176,
-        image: 'https://images.unsplash.com/photo-1519947486511-46149fa0a254?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-    },
-];
+// const similarProducts: SimilarProduct[] = [
+//     {
+//         id: 'prod-002',
+//         name: 'Executive High-Back Office Chair',
+//         price: 299.99,
+//         rating: 4.6,
+//         reviewCount: 187,
+//         image: 'https://images.unsplash.com/photo-1579656381226-5fc0f0100c3b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+//     },
+//     {
+//         id: 'prod-003',
+//         name: 'Modern Ergonomic Task Chair',
+//         price: 249.99,
+//         rating: 4.5,
+//         reviewCount: 142,
+//         image: 'https://images.unsplash.com/photo-1589384267710-7a170981ca78?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+//     },
+//     {
+//         id: 'prod-004',
+//         name: 'Designer Mesh Office Chair',
+//         price: 279.99,
+//         rating: 4.7,
+//         reviewCount: 213,
+//         image: 'https://images.unsplash.com/photo-1578500494198-246f612d3b3d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+//     },
+//     {
+//         id: 'prod-005',
+//         name: 'Luxury Leather Executive Chair',
+//         price: 399.99,
+//         rating: 4.9,
+//         reviewCount: 176,
+//         image: 'https://images.unsplash.com/photo-1519947486511-46149fa0a254?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+//     },
+// ];
 
-const ProductDetails = () => {
+const ProductDetails = ({ product, similarProducts }: { product: Product; similarProducts: SimilarProduct }) => {
+    console.log(product, similarProducts);
     const [selectedImage, setSelectedImage] = useState(0);
     const [selectedColor, setSelectedColor] = useState(0);
-    const [selectedSize, setSelectedSize] = useState(0);
+
     const [quantity, setQuantity] = useState(1);
 
     return (
@@ -126,7 +124,7 @@ const ProductDetails = () => {
                     <div className="space-y-6">
                         <div className="relative aspect-square overflow-hidden rounded-xl bg-gray-100">
                             <img
-                                src={product.images[selectedImage]}
+                                src={`/storage/${product.images[selectedImage]}`}
                                 alt={product.name}
                                 className="object-cover transition-all duration-300 hover:scale-105"
                                 sizes="(max-width: 768px) 100vw, 50vw"
@@ -134,17 +132,20 @@ const ProductDetails = () => {
                         </div>
 
                         <div className="flex space-x-4 overflow-auto pb-2">
-                            {product.images.map((image, index) => (
-                                <button
-                                    key={index}
-                                    onClick={() => setSelectedImage(index)}
-                                    className={`relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg ${
-                                        selectedImage === index ? 'ring-2 ring-indigo-600' : 'ring-1 ring-gray-200'
-                                    }`}
-                                >
-                                    <img src={image} alt={`${product.name} - View ${index + 1}`} className="object-cover" sizes="80px" />
-                                </button>
-                            ))}
+                            {product.images.map((image, index) => {
+                                const imagePath = `/storage/${image}`;
+                                return (
+                                    <button
+                                        key={index}
+                                        onClick={() => setSelectedImage(index)}
+                                        className={`relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg ${
+                                            selectedImage === index ? 'ring-2 ring-indigo-600' : 'ring-1 ring-gray-200'
+                                        }`}
+                                    >
+                                        <img src={imagePath} alt={`${product.name} - View ${index + 1}`} className="object-cover" sizes="80px" />
+                                    </button>
+                                );
+                            })}
                         </div>
                     </div>
 
@@ -152,7 +153,7 @@ const ProductDetails = () => {
                     <div className="flex flex-col space-y-6">
                         <div>
                             <h1 className="text-3xl font-bold text-gray-900">{product.name}</h1>
-                            <div className="mt-2 flex items-center">
+                            {/* <div className="mt-2 flex items-center">
                                 <div className="flex items-center">
                                     {[...Array(5)].map((_, i) => (
                                         <Star
@@ -170,13 +171,13 @@ const ProductDetails = () => {
                                 <p className="ml-2 text-sm text-gray-500">
                                     {product.rating} ({product.reviewCount} reviews)
                                 </p>
-                            </div>
+                            </div> */}
                         </div>
 
                         <div className="border-t border-b py-4">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <p className="text-3xl font-bold text-gray-900">${product.price.toFixed(2)}</p>
+                                    <p className="text-3xl font-bold text-gray-900">${product.price}</p>
                                     {product.originalPrice && (
                                         <p className="text-sm text-gray-500 line-through">${product.originalPrice.toFixed(2)}</p>
                                     )}
@@ -194,37 +195,24 @@ const ProductDetails = () => {
                             <div>
                                 <h3 className="text-sm font-medium text-gray-900">Color</h3>
                                 <div className="mt-2 flex space-x-3">
-                                    {product.colors.map((color, index) => (
-                                        <button
-                                            key={index}
-                                            onClick={() => setSelectedColor(index)}
-                                            className={`relative h-10 w-10 rounded-full ${
-                                                selectedColor === index ? 'ring-2 ring-indigo-600 ring-offset-2' : ''
-                                            }`}
-                                            title={color.name}
-                                        >
-                                            <span className="absolute inset-0 rounded-full" style={{ backgroundColor: color.value }}></span>
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-
-                            <div>
-                                <h3 className="text-sm font-medium text-gray-900">Size</h3>
-                                <div className="mt-2 flex flex-wrap gap-2">
-                                    {product.sizes.map((size, index) => (
-                                        <button
-                                            key={index}
-                                            onClick={() => setSelectedSize(index)}
-                                            className={`flex items-center justify-center rounded-md border px-4 py-2 text-sm font-medium ${
-                                                selectedSize === index
-                                                    ? 'border-indigo-600 bg-indigo-50 text-indigo-600'
-                                                    : 'border-gray-200 text-gray-900 hover:bg-gray-50'
-                                            }`}
-                                        >
-                                            {size}
-                                        </button>
-                                    ))}
+                                    {product.colors.map((colorStr, index) => {
+                                        const color = {
+                                            name: colorStr.split('=')[0],
+                                            value: colorStr.split('=')[1],
+                                        };
+                                        return (
+                                            <button
+                                                key={index}
+                                                onClick={() => setSelectedColor(index)}
+                                                className={`relative h-10 w-10 rounded-full ${
+                                                    selectedColor === index ? 'ring-2 ring-indigo-600 ring-offset-2' : ''
+                                                }`}
+                                                title={color.name}
+                                            >
+                                                <span className="absolute inset-0 rounded-full" style={{ backgroundColor: color.value }}></span>
+                                            </button>
+                                        );
+                                    })}
                                 </div>
                             </div>
 
@@ -268,12 +256,14 @@ const ProductDetails = () => {
                         <div>
                             <h3 className="text-sm font-medium text-gray-900">Features</h3>
                             <ul className="mt-2 space-y-2">
-                                {product.features.map((feature, index) => (
-                                    <li key={index} className="flex items-start">
-                                        <Check className="mr-2 h-5 w-5 flex-shrink-0 text-green-500" />
-                                        <span className="text-gray-600">{feature}</span>
-                                    </li>
-                                ))}
+                                {product.features.map((feature, index) => {
+                                    return (
+                                        <li key={index} className="flex items-start">
+                                            <Check className="mr-2 h-5 w-5 flex-shrink-0 text-green-500" />
+                                            <span className="text-gray-600">{feature}</span>
+                                        </li>
+                                    );
+                                })}
                             </ul>
                         </div>
                     </div>

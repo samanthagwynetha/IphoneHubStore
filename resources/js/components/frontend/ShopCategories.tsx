@@ -1,16 +1,9 @@
+import { CategoryItem } from '@/types/categories';
 import { Link } from '@inertiajs/react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 
-interface CategoryItem {
-    id: number;
-    name: string;
-    slug: string;
-    image: string;
-    color: string;
-}
-
-export default function ShopCategories() {
+export default function ShopCategories({ categories }: { categories: CategoryItem[] }) {
     const [activeIndex, setActiveIndex] = useState(0);
     const [sliding, setSliding] = useState(false);
     const [visibleItems, setVisibleItems] = useState(6);
@@ -26,92 +19,92 @@ export default function ShopCategories() {
     }, []);
 
     // Premium categories data
-    const categories: CategoryItem[] = [
-        {
-            id: 1,
-            name: 'Beauty & Fragrance',
-            slug: 'beauty-fragrance',
-            image: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80',
-            color: 'bg-amber-50',
-        },
-        {
-            id: 2,
-            name: 'Electronics',
-            slug: 'electronics',
-            image: 'https://images.unsplash.com/photo-166202691159-5558e9949346?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80',
-            color: 'bg-gray-100',
-        },
-        {
-            id: 3,
-            name: 'Health & Personal',
-            slug: 'health-personal',
-            image: 'https://images.unsplash.com/photo-1583209814683-c023dd293cc6?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80',
-            color: 'bg-sky-50',
-        },
-        {
-            id: 4,
-            name: "Men's Fashion",
-            slug: 'mens-fashion',
-            image: 'https://images.unsplash.com/photo-1516257984-b1b4d707412e?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80',
-            color: 'bg-blue-50',
-        },
-        {
-            id: 5,
-            name: 'Sports & Outdoors',
-            slug: 'sports-outdoors',
-            image: 'https://images.unsplash.com/photo-1599058917212-d750089bc07e?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80',
-            color: 'bg-purple-50',
-        },
-        {
-            id: 6,
-            name: "Women's Fashion",
-            slug: 'womens-fashion',
-            image: 'https://images.unsplash.com/photo-1525507119028-ed4c629a60a3?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80',
-            color: 'bg-indigo-50',
-        },
-        {
-            id: 7,
-            name: 'Automotive',
-            slug: 'automotive',
-            image: 'https://images.unsplash.com/photo-1504215680853-026ed2a45def?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80',
-            color: 'bg-blue-50',
-        },
-        {
-            id: 8,
-            name: 'Health & Nutrition',
-            slug: 'health-nutrition',
-            image: 'https://images.unsplash.com/photo-1583209814683-c023dd293cc6?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80',
-            color: 'bg-sky-50',
-        },
-        {
-            id: 9,
-            name: 'Kids Fashion',
-            slug: 'kids-fashion',
-            image: 'https://images.unsplash.com/photo-1543854608-fbb5c5c8a307?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80',
-            color: 'bg-violet-50',
-        },
-        {
-            id: 10,
-            name: 'Refurbished Department',
-            slug: 'refurbished',
-            image: 'https://images.unsplash.com/photo-1603706585128-8d096bea0021?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80',
-            color: 'bg-blue-50',
-        },
-        {
-            id: 11,
-            name: 'Stationary, Books & Media',
-            slug: 'stationary-books-media',
-            image: 'https://images.unsplash.com/photo-1599204606395-ede983886ce9?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80',
-            color: 'bg-amber-50',
-        },
-        {
-            id: 12,
-            name: 'Baby',
-            slug: 'baby',
-            image: 'https://images.unsplash.com/photo-1586683086816-c674f6bb3c69?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80',
-            color: 'bg-teal-50',
-        },
-    ];
+    // const categories: CategoryItem[] = [
+    //     {
+    //         id: 1,
+    //         name: 'Beauty & Fragrance',
+    //         slug: 'beauty-fragrance',
+    //         image: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80',
+    //         color: 'bg-amber-50',
+    //     },
+    //     {
+    //         id: 2,
+    //         name: 'Electronics',
+    //         slug: 'electronics',
+    //         image: 'https://images.unsplash.com/photo-166202691159-5558e9949346?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80',
+    //         color: 'bg-gray-100',
+    //     },
+    //     {
+    //         id: 3,
+    //         name: 'Health & Personal',
+    //         slug: 'health-personal',
+    //         image: 'https://images.unsplash.com/photo-1583209814683-c023dd293cc6?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80',
+    //         color: 'bg-sky-50',
+    //     },
+    //     {
+    //         id: 4,
+    //         name: "Men's Fashion",
+    //         slug: 'mens-fashion',
+    //         image: 'https://images.unsplash.com/photo-1516257984-b1b4d707412e?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80',
+    //         color: 'bg-blue-50',
+    //     },
+    //     {
+    //         id: 5,
+    //         name: 'Sports & Outdoors',
+    //         slug: 'sports-outdoors',
+    //         image: 'https://images.unsplash.com/photo-1599058917212-d750089bc07e?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80',
+    //         color: 'bg-purple-50',
+    //     },
+    //     {
+    //         id: 6,
+    //         name: "Women's Fashion",
+    //         slug: 'womens-fashion',
+    //         image: 'https://images.unsplash.com/photo-1525507119028-ed4c629a60a3?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80',
+    //         color: 'bg-indigo-50',
+    //     },
+    //     {
+    //         id: 7,
+    //         name: 'Automotive',
+    //         slug: 'automotive',
+    //         image: 'https://images.unsplash.com/photo-1504215680853-026ed2a45def?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80',
+    //         color: 'bg-blue-50',
+    //     },
+    //     {
+    //         id: 8,
+    //         name: 'Health & Nutrition',
+    //         slug: 'health-nutrition',
+    //         image: 'https://images.unsplash.com/photo-1583209814683-c023dd293cc6?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80',
+    //         color: 'bg-sky-50',
+    //     },
+    //     {
+    //         id: 9,
+    //         name: 'Kids Fashion',
+    //         slug: 'kids-fashion',
+    //         image: 'https://images.unsplash.com/photo-1543854608-fbb5c5c8a307?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80',
+    //         color: 'bg-violet-50',
+    //     },
+    //     {
+    //         id: 10,
+    //         name: 'Refurbished Department',
+    //         slug: 'refurbished',
+    //         image: 'https://images.unsplash.com/photo-1603706585128-8d096bea0021?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80',
+    //         color: 'bg-blue-50',
+    //     },
+    //     {
+    //         id: 11,
+    //         name: 'Stationary, Books & Media',
+    //         slug: 'stationary-books-media',
+    //         image: 'https://images.unsplash.com/photo-1599204606395-ede983886ce9?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80',
+    //         color: 'bg-amber-50',
+    //     },
+    //     {
+    //         id: 12,
+    //         name: 'Baby',
+    //         slug: 'baby',
+    //         image: 'https://images.unsplash.com/photo-1586683086816-c674f6bb3c69?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80',
+    //         color: 'bg-teal-50',
+    //     },
+    // ];
 
     // Calculate visible items based on screen size
     useEffect(() => {
@@ -245,39 +238,42 @@ export default function ShopCategories() {
                         }}
                     >
                         <div className="grid w-full grid-cols-3 gap-4 sm:grid-cols-4 md:grid-cols-5 md:gap-6 lg:grid-cols-6 xl:grid-cols-8">
-                            {visibleCategories().map((category, idx) => (
-                                <Link
-                                    key={category.id}
-                                    href={`/category/${category.slug}`}
-                                    className="group flex flex-col items-center"
-                                    onMouseEnter={() => setHoveredCategory(category.id)}
-                                    onMouseLeave={() => setHoveredCategory(null)}
-                                    style={{
-                                        transition: 'all 0.5s ease',
-                                        transitionDelay: `${idx * 0.05}s`,
-                                    }}
-                                >
-                                    <div
-                                        className={`aspect-square w-full overflow-hidden rounded-full ${category.color} p-1.5 ${
-                                            hoveredCategory === category.id ? 'ring-opacity-50 shadow-md ring-2 ring-amber-300' : 'shadow-sm'
-                                        } transform transition-all duration-300 ${hoveredCategory === category.id ? 'scale-105' : ''}`}
+                            {visibleCategories().map((category, idx) => {
+                                const imagePath = category.image.startsWith('categories/') ? `/storage/${category.image}` : category.image;
+                                return (
+                                    <Link
+                                        key={category.id}
+                                        href={`/category/${category.slug}`}
+                                        className="group flex flex-col items-center"
+                                        onMouseEnter={() => setHoveredCategory(category.id)}
+                                        onMouseLeave={() => setHoveredCategory(null)}
+                                        style={{
+                                            transition: 'all 0.5s ease',
+                                            transitionDelay: `${idx * 0.05}s`,
+                                        }}
                                     >
-                                        <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-full bg-white">
-                                            <div className="absolute inset-0 bg-gradient-to-b from-white/0 via-white/0 to-black/10"></div>
-                                            <img
-                                                src={category.image}
-                                                alt={category.name}
-                                                className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
-                                            />
+                                        <div
+                                            className={`aspect-square w-full overflow-hidden rounded-full ${category.color} p-1.5 ${
+                                                hoveredCategory === category.id ? 'ring-opacity-50 shadow-md ring-2 ring-amber-300' : 'shadow-sm'
+                                            } transform transition-all duration-300 ${hoveredCategory === category.id ? 'scale-105' : ''}`}
+                                        >
+                                            <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-full bg-white">
+                                                <div className="absolute inset-0 bg-gradient-to-b from-white/0 via-white/0 to-black/10"></div>
+                                                <img
+                                                    src={imagePath}
+                                                    alt={category.name}
+                                                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                                />
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div className="mt-3 text-center">
-                                        <h3 className="line-clamp-2 text-xs font-medium text-gray-800 transition-colors group-hover:text-amber-700 sm:text-sm">
-                                            {category.name}
-                                        </h3>
-                                    </div>
-                                </Link>
-                            ))}
+                                        <div className="mt-3 text-center">
+                                            <h3 className="line-clamp-2 text-xs font-medium text-gray-800 transition-colors group-hover:text-amber-700 sm:text-sm">
+                                                {category.name}
+                                            </h3>
+                                        </div>
+                                    </Link>
+                                );
+                            })}
                         </div>
                     </div>
                 </div>

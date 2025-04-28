@@ -1,5 +1,7 @@
 'use client';
-import { ChevronLeft, ChevronRight, Eye, Heart, ShoppingCart, Tag } from 'lucide-react';
+import { ProductItem } from '@/types/products';
+import { Link } from '@inertiajs/react';
+import { ChevronLeft, ChevronRight, Eye, ShoppingCart, Tag } from 'lucide-react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 // Product type definition with discount properties
@@ -121,72 +123,42 @@ const sampleProducts: Product[] = [
     },
 ];
 
-// Star rating component
-const StarRating: React.FC<{ rating: number }> = ({ rating }) => {
-    return (
-        <div className="flex items-center">
-            {[...Array(5)].map((_, i) => (
-                <svg
-                    key={i}
-                    className={`h-3 w-3 ${i < Math.floor(rating) ? 'text-amber-400' : i < rating ? 'text-amber-400' : 'text-gray-300'}`}
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                >
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.8-2.034c-.783-.57-.38-1.81.588-1.81h3.462a1 1 0 00.95-.69l1.07-3.292z" />
-                </svg>
-            ))}
-            <span className="ml-1 text-xs text-gray-600">{rating.toFixed(1)}</span>
-        </div>
-    );
-};
-
 // Product Card Component with discount
 const ProductCard: React.FC<{
-    product: Product;
-    onFavoriteToggle: (id: string) => void;
-    onAddToCart: (id: string) => void;
-}> = ({ product, onFavoriteToggle, onAddToCart }) => {
+    product: ProductItem;
+
+    onAddToCart: (id: number) => void;
+}> = ({ product, onAddToCart }) => {
+    const imagePath = `/storage/${product.images[0]}`;
+    const discount = product.original_price - product.price;
+    const discountPercentage = Math.round((discount / product.original_price) * 100);
     return (
         <div className="group relative flex h-full flex-col overflow-hidden rounded-xl bg-white shadow-md transition-all duration-300 hover:shadow-xl">
             {/* Image container with aspect ratio */}
             <div className="relative w-full overflow-hidden bg-gray-50 pb-[100%]">
                 <img
-                    src={product.image}
+                    src={imagePath}
                     alt={product.name}
                     className="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
                 />
 
                 {/* Badges */}
                 <div className="absolute top-3 left-3 flex flex-col gap-2">
-                    {product.discountPercentage > 0 && (
-                        <span className="rounded-lg bg-red-500 px-2 py-1 text-xs font-bold text-white shadow-sm">
-                            {product.discountPercentage}% OFF
-                        </span>
+                    {discountPercentage > 0 && (
+                        <span className="rounded-lg bg-red-500 px-2 py-1 text-xs font-bold text-white shadow-sm">{discountPercentage}% OFF</span>
                     )}
-                    {product.isNew && <span className="rounded-lg bg-emerald-500 px-2 py-1 text-xs font-bold text-white shadow-sm">NEW</span>}
-                    {product.stock <= 10 && (
-                        <span className="rounded-lg bg-amber-500 px-2 py-1 text-xs font-bold text-white shadow-sm">Only {product.stock} left</span>
-                    )}
-                </div>
-
-                {/* Action buttons */}
-                <div className="absolute top-3 right-3">
-                    <button
-                        onClick={() => onFavoriteToggle(product.id)}
-                        className="bg-opacity-90 hover:bg-opacity-100 mb-2 flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-sm transition-all duration-200"
-                        aria-label="Add to favorites"
-                    >
-                        <Heart size={16} className={product.favorite ? 'fill-red-500 text-red-500' : 'text-gray-700'} />
-                    </button>
                 </div>
 
                 {/* Quick actions overlay */}
                 <div className="bg-opacity-20 absolute inset-0 flex items-center justify-center bg-black opacity-0 transition-opacity duration-300 group-hover:opacity-100">
                     <div className="flex translate-y-4 transform gap-2 transition-transform duration-300 group-hover:translate-y-0">
-                        <button className="flex items-center gap-1 rounded-lg bg-white px-3 py-2 text-sm font-medium text-gray-800 shadow-md transition-colors duration-200 hover:bg-gray-100">
+                        <Link
+                            href={`/products/${product.slug}`}
+                            className="flex items-center gap-1 rounded-lg bg-white px-3 py-2 text-sm font-medium text-gray-800 shadow-md transition-colors duration-200 hover:bg-gray-100"
+                        >
                             <Eye size={16} />
                             <span>Quick View</span>
-                        </button>
+                        </Link>
                     </div>
                 </div>
             </div>
@@ -194,21 +166,21 @@ const ProductCard: React.FC<{
             {/* Product details */}
             <div className="flex flex-grow flex-col p-4">
                 <div className="mb-1">
-                    <span className="text-xs font-medium tracking-wider text-gray-500 uppercase">{product.category}</span>
+                    <span className="text-xs font-medium tracking-wider text-gray-500 uppercase">{product.category.name}</span>
                     <h3 className="mt-1 line-clamp-1 text-sm font-medium text-gray-900">{product.name}</h3>
                 </div>
 
-                <div className="mt-1 mb-3">
+                {/* <div className="mt-1 mb-3">
                     <StarRating rating={product.rating} />
-                </div>
+                </div> */}
 
                 <p className="mb-3 line-clamp-2 text-xs text-gray-500">{product.description}</p>
 
                 <div className="mt-auto flex items-end justify-between border-t border-gray-100 pt-3">
                     <div className="flex flex-col">
-                        <span className="text-xs text-gray-500 line-through">${product.originalPrice.toFixed(2)}</span>
+                        <span className="text-xs text-gray-500 line-through">${product.original_price}</span>
                         <div className="flex items-baseline gap-1">
-                            <span className="text-lg font-bold text-gray-900">${product.discountPrice.toFixed(2)}</span>
+                            <span className="text-lg font-bold text-gray-900">${discount}</span>
                             {/* <span className="text-xs font-medium text-red-500">
                 Save $
                 {(product.originalPrice - product.discountPrice).toFixed(2)}
@@ -218,12 +190,10 @@ const ProductCard: React.FC<{
 
                     <button
                         onClick={() => onAddToCart(product.id)}
-                        className={`flex items-center gap-1 rounded-lg px-3 py-2 shadow-sm transition-all duration-200 ${
-                            product.inCart ? 'border border-green-200 bg-green-50 text-green-600' : 'bg-indigo-600 text-white hover:bg-indigo-700'
-                        }`}
+                        className={`} flex items-center gap-1 rounded-lg bg-indigo-600 px-3 py-2 text-white shadow-sm transition-all duration-200 hover:bg-indigo-700`}
                     >
                         <ShoppingCart size={16} />
-                        <span className="text-xs font-medium">{product.inCart ? 'Added' : 'Add'}</span>
+                        <span className="text-xs font-medium">Add to cart</span>
                     </button>
                 </div>
             </div>
@@ -232,8 +202,8 @@ const ProductCard: React.FC<{
 };
 
 // Main Carousel Component
-const ProductListing = () => {
-    const [products, setProducts] = useState<Product[]>(sampleProducts);
+const ProductListing = ({ products }: { products: ProductItem[] }) => {
+    // const [products, setProducts] = useState<Product[]>(sampleProducts);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [visibleProducts, setVisibleProducts] = useState(4);
     const carouselRef = useRef<HTMLDivElement>(null);
@@ -266,14 +236,9 @@ const ProductListing = () => {
         setCurrentIndex((prev) => (prev - 1 < 0 ? Math.max(0, products.length - visibleProducts) : prev - 1));
     };
 
-    // Toggle product as favorite
-    const toggleFavorite = (id: string) => {
-        setProducts(products.map((p) => (p.id === id ? { ...p, favorite: !p.favorite } : p)));
-    };
-
     // Add product to cart
-    const addToCart = (id: string) => {
-        setProducts(products.map((p) => (p.id === id ? { ...p, inCart: !p.inCart } : p)));
+    const addToCart = (id: number) => {
+        console.log(id);
     };
 
     // Calculate displayed products
@@ -332,7 +297,7 @@ const ProductListing = () => {
                 >
                     {products.map((product) => (
                         <div key={product.id} className="w-full flex-shrink-0 px-3 md:w-1/2 lg:w-1/3 xl:w-1/4">
-                            <ProductCard product={product} onFavoriteToggle={toggleFavorite} onAddToCart={addToCart} />
+                            <ProductCard product={product} onAddToCart={addToCart} />
                         </div>
                     ))}
                 </div>

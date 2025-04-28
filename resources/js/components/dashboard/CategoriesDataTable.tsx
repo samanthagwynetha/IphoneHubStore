@@ -33,20 +33,18 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { CategoryItem } from '@/types/categories';
-import { CreateProductItem } from '@/types/products';
+import { CategoryItem, CreateCategoryItem } from '@/types/categories';
 import { Link, router, useForm } from '@inertiajs/react';
 import { toast } from 'sonner';
 import * as XLSX from 'xlsx';
 import { CompactFileInput } from '../FormInputs/ImageUploadInput';
 import InputError from '../input-error';
-import { Checkbox } from '../ui/checkbox';
 import { Textarea } from '../ui/textarea';
 
 export type Product = {
     id: string;
     name: string;
-    category: CategoryItem;
+    category: string;
     salesCount: number;
     image: string;
     stock: number;
@@ -54,7 +52,7 @@ export type Product = {
     status: 'in-stock' | 'out-stock';
 };
 
-// const products: Product[] = [
+// const categories: Product[] = [
 //     {
 //         id: 'prod-001',
 //         name: 'Wireless Headphones',
@@ -117,20 +115,15 @@ export type Product = {
 //     },
 // ];
 
-export const columns: ColumnDef<Product>[] = [
+export const columns: ColumnDef<CategoryItem>[] = [
     {
-        accessorKey: 'images',
+        accessorKey: 'image',
         header: 'Image',
         cell: ({ row }) => {
+            const imagePath = row.original.image.startsWith('categories/') ? `/storage/${row.original.image}` : row.original.image;
             return (
                 <div className="flex items-center justify-center">
-                    <img
-                        src={`/storage/${row.original.image}`}
-                        alt={row.getValue('name')}
-                        width={40}
-                        height={40}
-                        className="rounded-md object-cover"
-                    />
+                    <img src={imagePath} alt={row.getValue('name')} width={40} height={40} className="rounded-md object-cover" />
                 </div>
             );
         },
@@ -148,38 +141,7 @@ export const columns: ColumnDef<Product>[] = [
         },
         cell: ({ row }) => <div className="font-medium">{row.getValue('name')}</div>,
     },
-    {
-        accessorKey: 'price',
-        header: ({ column }) => {
-            return (
-                <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-                    Price
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
-                </Button>
-            );
-        },
-        cell: ({ row }) => {
-            const price = Number.parseFloat(row.getValue('price'));
-            const formatted = new Intl.NumberFormat('en-US', {
-                style: 'currency',
-                currency: 'USD',
-            }).format(price);
 
-            return <div>{formatted}</div>;
-        },
-    },
-    {
-        accessorKey: 'category',
-        header: 'Category',
-        cell: ({ row }) => {
-            const name = row.original.category.name;
-            return (
-                <Button variant="outline" size="sm">
-                    {name}
-                </Button>
-            );
-        },
-    },
     {
         id: 'actions',
         header: 'Actions',
@@ -204,17 +166,7 @@ export const columns: ColumnDef<Product>[] = [
     },
 ];
 
-export default function ProductsDataTable({
-    categories,
-    products,
-}: {
-    products: Product[];
-    categories: {
-        label: string;
-        value: number;
-    }[];
-}) {
-    console.log(products);
+export default function CategoriesDataTable({ categories }: { categories: CategoryItem[] }) {
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
@@ -224,7 +176,7 @@ export default function ProductsDataTable({
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
     const table = useReactTable({
-        data: products,
+        data: categories,
         columns,
         onSortingChange: setSorting,
         onColumnFiltersChange: setColumnFilters,
@@ -265,11 +217,8 @@ export default function ProductsDataTable({
             return {
                 ID: rowData.id,
                 Name: rowData.name,
-                Category: rowData.category,
-                Status: rowData.status,
-                Stock: rowData.stock,
-                'Sales Count': rowData.salesCount,
-                Price: `$${rowData.price.toFixed(2)}`,
+                Slug: rowData.slug,
+                Image: rowData.image,
             };
         });
 
@@ -283,41 +232,23 @@ export default function ProductsDataTable({
         // Generate Excel file and trigger download
         XLSX.writeFile(workbook, 'products.xlsx');
     };
-
-    // Calculate total value of all products
-    const totalValue = products.reduce((sum, product) => sum + product.price * product.stock, 0);
-    const formattedTotalValue = new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-    }).format(totalValue);
-
     const [images, setImages] = React.useState<File[]>([]);
-    const { data, setData, processing, errors, reset } = useForm<Required<CreateProductItem>>({
+    const { data, setData, processing, errors, reset } = useForm<Required<CreateCategoryItem>>({
         name: '',
         slug: '',
-        colors: '',
+        color: '',
         image: null,
         description: '',
-        is_featured: true,
-        price: 0,
-        original_price: 0,
-        features: '',
-        images: null,
-        category_id: '1',
     });
 
     const submit: React.FormEventHandler = (e) => {
         e.preventDefault();
         data.image = images[0];
-        data.images = images;
-        data.colors = typeof data.colors === 'string' ? data.colors.split(',') : data.colors;
-        data.features = typeof data.features === 'string' ? data.features.split(',') : data.features;
-        data.category_id = Number(data.category_id);
         console.log(data);
-        router.post('/dashboard/products', data, {
+        router.post('/dashboard/categories', data, {
             onFinish: () => {
                 reset();
-                toast.success('Product Successfully');
+                toast.success('Category Successfully');
             },
         });
         // post(route('register'), {
@@ -330,10 +261,8 @@ export default function ProductsDataTable({
             <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h2 className="text-2xl font-bold tracking-tight">Products</h2>
-                        <p className="text-muted-foreground text-sm">
-                            {products.length} items | Total Value: USD {formattedTotalValue}
-                        </p>
+                        <h2 className="text-2xl font-bold tracking-tight">Categories</h2>
+                        <p className="text-muted-foreground text-sm">Manage your shop Categories</p>
                     </div>
                     <div className="flex items-center gap-2">
                         <Button variant="outline" size="icon">
@@ -349,94 +278,36 @@ export default function ProductsDataTable({
                             <DialogContent className="sm:max-w-[750px]">
                                 <form action="" onSubmit={submit}>
                                     <DialogHeader>
-                                        <DialogTitle>Add New Product</DialogTitle>
-                                        <DialogDescription>Fill in the details to add a new product to your inventory.</DialogDescription>
+                                        <DialogTitle>Add New Category</DialogTitle>
+                                        <DialogDescription>Fill in the details to add a new category to your inventory.</DialogDescription>
                                     </DialogHeader>
                                     <div className="grid gap-6 py-4">
                                         <div className="grid gap-6 md:grid-cols-2">
                                             <div className="space-y-2">
-                                                <Label htmlFor="name">Product Name</Label>
+                                                <Label htmlFor="name">Category Name</Label>
                                                 <Input id="name" value={data.name} onChange={(e) => setData('name', e.target.value)} />
                                                 <InputError message={errors.name} className="mt-2" />
                                             </div>
                                             <div className="space-y-2">
-                                                <Label htmlFor="category">Product Colors eg Navy Blue=#15317E</Label>
-                                                <Input id="category" value={data.colors} onChange={(e) => setData('colors', e.target.value)} />
-                                                <InputError message={errors.colors} className="mt-2" />
+                                                <Label htmlFor="category">Category Tailwind Color Class eg bg-slate-100</Label>
+                                                <Input id="category" value={data.color} onChange={(e) => setData('color', e.target.value)} />
+                                                <InputError message={errors.color} className="mt-2" />
                                             </div>
                                         </div>
-                                        <div className="grid gap-6 md:grid-cols-3">
-                                            <div className="space-y-2">
-                                                <Label htmlFor="price">Price</Label>
-                                                <Input id="price" value={data.price} onChange={(e) => setData('price', Number(e.target.value))} />
-                                                <InputError message={errors.price} className="mt-2" />
-                                            </div>
-                                            <div className="space-y-2">
-                                                <Label htmlFor="category">Original Price</Label>
-                                                <Input
-                                                    id="original_price"
-                                                    value={data.original_price}
-                                                    onChange={(e) => setData('original_price', Number(e.target.value))}
-                                                />
-                                            </div>
-
-                                            <div className="space-y-2">
-                                                <Label htmlFor="category">Select Category</Label>
-                                                <Select onValueChange={(value) => setData('category_id', value)} defaultValue={'1'}>
-                                                    <SelectTrigger className="w-[180px]">
-                                                        <SelectValue placeholder="Category" />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        {categories.map((item) => {
-                                                            return (
-                                                                <SelectItem key={item.value} value={item.value.toString()}>
-                                                                    {item.label}
-                                                                </SelectItem>
-                                                            );
-                                                        })}
-                                                    </SelectContent>
-                                                </Select>
-                                            </div>
+                                        <div className="grid w-full gap-1.5">
+                                            <Label htmlFor="message">Category Description</Label>
+                                            <Textarea
+                                                value={data.description}
+                                                onChange={(e) => setData('description', e.target.value)}
+                                                placeholder="Type your message here."
+                                                id="message"
+                                            />
+                                            <InputError message={errors.description} className="mt-2" />
                                         </div>
-                                        <div className="grid gap-4 md:grid-cols-2">
-                                            <div className="space-y-2">
-                                                <Label htmlFor="features">Product Features (comma separated) </Label>
-                                                <Input id="features" value={data.features} onChange={(e) => setData('features', e.target.value)} />
-                                                <InputError message={errors.features} className="mt-2" />
-                                            </div>
-
-                                            <div className="items-top flex space-x-2">
-                                                <Checkbox
-                                                    checked={data.is_featured}
-                                                    onCheckedChange={(value) => setData('is_featured', !!value)}
-                                                    id="isFeatured"
-                                                />
-                                                <div className="grid gap-1.5 leading-none">
-                                                    <label
-                                                        htmlFor="terms1"
-                                                        className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                                    >
-                                                        Is Featured
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="grid gap-4 md:grid-cols-2">
-                                            <div className="grid w-full gap-1.5">
-                                                <Label htmlFor="message">Product Description</Label>
-                                                <Textarea
-                                                    value={data.description}
-                                                    onChange={(e) => setData('description', e.target.value)}
-                                                    placeholder="Type your description here."
-                                                    id="message"
-                                                />
-                                                <InputError message={errors.description} className="mt-2" />
-                                            </div>
-                                            <div className="">
-                                                <h2 className="mb-3 text-lg font-semibold">Upload product Images</h2>
-                                                <div className="rounded border p-4">
-                                                    <CompactFileInput multiple={true} maxSizeMB={1} onChange={setImages} />
-                                                </div>
+                                        <div className="mb-8">
+                                            <h2 className="mb-3 text-lg font-semibold">Upload Category Image</h2>
+                                            <div className="rounded border p-4">
+                                                <CompactFileInput multiple={true} maxSizeMB={1} onChange={setImages} />
                                             </div>
                                         </div>
                                     </div>
@@ -445,7 +316,7 @@ export default function ProductsDataTable({
                                             Cancel
                                         </Button>
                                         <Button disabled={processing} type="submit">
-                                            {processing ? 'Creating...' : 'Add Product'}
+                                            {processing ? 'Creating...' : 'Add Category'}
                                         </Button>
                                     </DialogFooter>
                                 </form>

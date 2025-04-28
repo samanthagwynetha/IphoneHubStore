@@ -1,7 +1,8 @@
-import { SimilarProduct } from '@/types/products';
-import { ChevronLeft, ChevronRight, Star } from 'lucide-react';
+import { ProductItem } from '@/types/products';
+import { Link } from '@inertiajs/react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
-export default function SimilarProducts({ similarProducts }: { similarProducts: SimilarProduct[] }) {
+export default function SimilarProducts({ similarProducts }: { similarProducts: ProductItem[] }) {
     return (
         <div className="mt-16">
             <div className="flex items-center justify-between">
@@ -18,10 +19,10 @@ export default function SimilarProducts({ similarProducts }: { similarProducts: 
 
             <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
                 {similarProducts.map((product) => (
-                    <a href="#" key={product.id} className="group block">
+                    <Link href={`/products/${product.slug}`} key={product.id} className="group block">
                         <div className="aspect-square w-full overflow-hidden rounded-lg bg-gray-100">
                             <img
-                                src={product.image}
+                                src={`/storage/${product.images[0]}`}
                                 alt={product.name}
                                 width={500}
                                 height={500}
@@ -30,26 +31,10 @@ export default function SimilarProducts({ similarProducts }: { similarProducts: 
                         </div>
                         <div className="mt-4">
                             <h3 className="text-sm font-medium text-gray-900">{product.name}</h3>
-                            <div className="mt-1 flex items-center">
-                                <div className="flex items-center">
-                                    {[...Array(5)].map((_, i) => (
-                                        <Star
-                                            key={i}
-                                            className={`h-4 w-4 ${
-                                                i < Math.floor(product.rating)
-                                                    ? '-yellow-400 text-yellow-400'
-                                                    : i < product.rating
-                                                      ? '-yellow-400 text-yellow-400 opacity-50'
-                                                      : 'text-gray-300'
-                                            }`}
-                                        />
-                                    ))}
-                                </div>
-                                <p className="ml-2 text-xs text-gray-500">({product.reviewCount})</p>
-                            </div>
-                            <p className="mt-1 text-sm font-medium text-gray-900">${product.price.toFixed(2)}</p>
+
+                            <p className="mt-1 text-sm font-medium text-gray-900">${product.price}</p>
                         </div>
-                    </a>
+                    </Link>
                 ))}
             </div>
         </div>
