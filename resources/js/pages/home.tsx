@@ -13,11 +13,9 @@ export default function home({ categories, products }: { categories: CategoryIte
                 <div className="container mx-auto max-w-6xl">
                     <ShopBanner />
                     <div className="py-16">
-                        <ShopCategories categories={categories} />
+                        <ShopCategories />
                     </div>
-                    <div className="py-8">
-                        <ProductListing products={products} />
-                    </div>
+                    
                 </div>
             </div>
         </ShopFrontLayout>
