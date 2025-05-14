@@ -17,6 +17,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('dashboard/index');
     })->name('dashboard');
 
+    Route::get('/store', function () {
+        return Inertia::render('resources/js/components/frontend/StorePage.tsx');
+    })->name('store.index');
 
     Route::get('/dashboard/products',[ProductController::class,'list_products'] )->name('dashboard.products.index');
     Route::post('/dashboard/products',[ProductController::class,'save_product'] )->name('dashboard.products.save');

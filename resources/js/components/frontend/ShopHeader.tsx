@@ -3,6 +3,7 @@ import { ChevronDown, Minus, Plus, Search, ShoppingBag, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
+import { IoLogoApple } from "react-icons/io5";
 
 import { Input } from '@/components/ui/input';
 import { Sheet, SheetClose, SheetContent, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
@@ -72,10 +73,8 @@ export default function ShopHeader() {
                         <Link href="/" className="flex items-center">
                             <div className="relative h-8 w-40">
                                 <div className="flex items-center">
-                                    <span className="text-3xl font-bold tracking-tight">Simple UI</span>
-                                    <div className="ml-1 flex h-5 w-5 items-center justify-center rounded-full bg-orange-500 text-white">
-                                        <span className="text-xs font-bold">★</span>
-                                    </div>
+                                    <span className="text-3xl font-bold tracking-tight"><IoLogoApple /></span>
+                                   
                                 </div>
                             </div>
                         </Link>
@@ -89,7 +88,7 @@ export default function ShopHeader() {
                                 placeholder="Search products, brands and categories"
                                 className="h-10 w-full rounded-r-none border-r-0"
                             />
-                            <Button type="submit" className="h-10 rounded-l-none bg-orange-500 hover:bg-orange-600">
+                            <Button type="submit" className="h-10 rounded-l-none bg-[#000000] hover:bg-[#000000] dark:bg-white ">
                                 Search
                             </Button>
                         </div>
@@ -110,7 +109,7 @@ export default function ShopHeader() {
                                 <Button variant="ghost" size="icon" className="relative rounded-full">
                                     <ShoppingBag className="h-5 w-5" />
                                     {cartItems.length > 0 && (
-                                        <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-orange-500 text-xs font-medium text-white">
+                                        <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-black dark:bg-white text-xs font-medium text-white dark:text-black">
                                             {cartItems.reduce((total, item) => total + item.quantity, 0)}
                                         </span>
                                     )}
@@ -206,7 +205,7 @@ export default function ShopHeader() {
                                                 <span className="text-base font-semibold">${calculateTotal().toFixed(2)}</span>
                                             </div>
                                             <div className="grid gap-2">
-                                                <Button className="w-full bg-orange-500 py-6 hover:bg-orange-600">Proceed to Checkout</Button>
+                                                <Button className="w-full bg-black py-6 hover:bg-black dark:bg-white">Proceed to Checkout</Button>
                                                 <SheetClose asChild>
                                                     <Button variant="outline" className="w-full">
                                                         Continue Shopping
