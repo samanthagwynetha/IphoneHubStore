@@ -59,7 +59,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     Route::get('/dashboard/categories',[CategoryController::class,'list_categories'] )->name('dashboard.categories.index');
     Route::post('/dashboard/categories', [CategoryController::class,'save_category'])->name('dashboard.categories.save');
-    
+
+    Route::put('/dashboard/categories/{category}', [CategoryController::class, 'update'])->name('dashboard.categories.update');
+    Route::delete('/dashboard/categories/{category}', [CategoryController::class, 'destroy'])->name('dashboard.categories.destroy');
 });
 
 Route::get('/users',[AuthenticatedSessionController::class,'getusers'] )->name('Users');
