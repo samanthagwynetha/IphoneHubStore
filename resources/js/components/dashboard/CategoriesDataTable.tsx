@@ -366,7 +366,7 @@ export default function CategoriesDataTable({ categories }: { categories: Catego
                                         </div>
                                     </div>
                                     <DialogFooter>
-                                        <Button variant="outline" onClick={() => setShowAddDialog(false)}>
+                                        <Button variant="outline" type='button' onClick={() => setShowAddDialog(false)}>
                                             Cancel
                                         </Button>
                                         <Button disabled={processing} type="submit">

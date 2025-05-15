@@ -38,18 +38,21 @@ class ProductController extends Controller
           $slug = Str::slug($request->name);
           $image ='';
           $images =[];
+
         //   Image
         if($request->hasFile('image')){
         $image = $request->file('image')->store('products','public');
         }
+
         $images = [];
+
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $image) {
                 $images[] = $image->store('products/images', 'public');
             }
         }
 
-          $new_product =[
+        $new_product =[
         'name' =>$request->name,
         'slug'=>$slug,
         'colors' =>$request->colors,
@@ -168,51 +171,46 @@ class ProductController extends Controller
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
             'old_price' => 'nullable|numeric|min:0',
-            'stock' => 'required|integer|min:0',
             'image' => 'nullable|image|max:2048',
-            'gallery' => 'nullable|array',
-            'gallery.*' => 'image|max:2048',
-            'is_featured' => 'boolean',
-            'is_active' => 'boolean',
+            'colors'=>'array|nullable',
+            'features'=>'array|nullable',
+            'images' => 'nullable|array',
+            'images.*' => 'image|max:2048',
+            'is_featured' => 'nullable|boolean',
         ]);
 
-        // Generate slug if name changed
+        $image ='';
+        $images =[];
+
         if ($validated['name'] !== $product->name) {
-            $validated['slug'] = Str::slug($validated['name']);
+            $validated['slug'] = Str::slug($request->name);
+
         }
 
-        // Handle main image upload
         if ($request->hasFile('image')) {
-            // Delete old image if exists
             if ($product->image) {
                 Storage::disk('public')->delete($product->image);
             }
-
-            $validated['image'] = $request->file('image')->store('products', 'public');
+            $validated['image'] = $request->file('image')->store('products','public');
+        } else {
+            $validated['images'] = $product->image;
         }
 
-        // Handle gallery images upload
-        if ($request->hasFile('gallery')) {
-            // Delete old gallery images if exist
-            if ($product->gallery) {
-                foreach ($product->gallery as $image) {
-                    Storage::disk('public')->delete($image);
-                }
+        $images = [];
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                $images[] = $image->store('products/images', 'public');
+
             }
-
-            $gallery = [];
-
-            foreach ($request->file('gallery') as $image) {
-                $gallery[] = $image->store('products/gallery', 'public');
-            }
-
-            $validated['gallery'] = $gallery;
+            $validated['images'] = $images;
+        } else {
+            $validated['images'] = $product->images;
         }
 
         $product->update($validated);
+        return back(); 
 
-        return redirect()->route('admin.products.index')
-            ->with('success', 'Product updated successfully');
+        
     }
 
     /**
@@ -220,16 +218,8 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        // Delete main image if exists
         if ($product->image) {
             Storage::disk('public')->delete($product->image);
-        }
-
-        // Delete gallery images if exist
-        if ($product->gallery) {
-            foreach ($product->gallery as $image) {
-                Storage::disk('public')->delete($image);
-            }
         }
 
         $product->delete();

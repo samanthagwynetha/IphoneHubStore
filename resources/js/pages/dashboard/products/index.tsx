@@ -4,6 +4,8 @@ import { type BreadcrumbItem } from '@/types';
 import { CategoryItem } from '@/types/categories';
 import { ProductItem } from '@/types/products';
 import { Head } from '@inertiajs/react';
+import { Images } from 'lucide-react';
+import { features } from 'process';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -18,11 +20,18 @@ export default function Products({ categories, products }: { categories: Categor
             id: item.id,
             name: item.name,
             category: item.category,
-            salesCount: 0,
-           image: item.images?.[0] ?? null,
-            stock: 0,
+            // salesCount: 0,
             price: item.price,
-            status: item.in_stock ? 'in-stock' : 'out-stock',
+            original_price: item.original_price,
+            description: item.description,
+            features: item.features,
+            image: item.images?.[0] ?? null,
+            Images: item.images ?? null,
+            colors: item.colors,
+            is_featured: item.is_featured,
+            in_stock: item.in_stock
+            // stock: 0,
+            // status: item.in_stock ? 'in-stock' : 'out-stock',
         };
     });
     const categoryOptions = categories.map((item) => {

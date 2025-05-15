@@ -6,6 +6,7 @@ export interface CategoryItem {
     description: string;
     color: string;
 }
+
 export interface CreateCategoryItem {
     name: string;
     slug: string;
