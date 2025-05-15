@@ -41,6 +41,8 @@ import { CompactFileInput } from '../FormInputs/ImageUploadInput';
 import InputError from '../input-error';
 import { Textarea } from '../ui/textarea';
 
+
+
 export type Product = {
     id: string;
     name: string;

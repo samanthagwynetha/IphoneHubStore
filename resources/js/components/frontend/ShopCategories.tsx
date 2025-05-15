@@ -1,6 +1,4 @@
 import { Button } from '@headlessui/react';
-import { Link } from '@inertiajs/react';
-import React from 'react'
 
 const Highlights = () => {
   return (
@@ -37,7 +35,7 @@ const Highlights = () => {
                 </div>
             </div>
             <div className="w-full flex items-center justify-center mt-6">
-                 <a href={route('store.index')}>
+                 <a href="/store">
                     <Button className="bg-white text-black py-4 px-8 rounded-full border hover:bg-transparent hover:text-white hover:border-white">
                     View Shop
                     </Button>
