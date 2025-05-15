@@ -41,8 +41,6 @@ import { CompactFileInput } from '../FormInputs/ImageUploadInput';
 import InputError from '../input-error';
 import { Textarea } from '../ui/textarea';
 
-
-
 export type Product = {
     id: string;
     name: string;
@@ -54,120 +52,6 @@ export type Product = {
     status: 'in-stock' | 'out-stock';
 };
 
-// const categories: Product[] = [
-//     {
-//         id: 'prod-001',
-//         name: 'Wireless Headphones',
-//         category: 'Electronics',
-//         salesCount: 342,
-//         image: '/placeholder.png?height=40&width=40',
-//         stock: 56,
-//         price: 129.99,
-//         status: 'in-stock',
-//     },
-//     {
-//         id: 'prod-002',
-//         name: 'Smart Watch',
-//         category: 'Electronics',
-//         salesCount: 189,
-//         image: '/placeholder.png?height=40&width=40',
-//         stock: 23,
-//         price: 249.99,
-//         status: 'in-stock',
-//     },
-//     {
-//         id: 'prod-003',
-//         name: 'Yoga Mat',
-//         category: 'Fitness',
-//         salesCount: 421,
-//         image: '/placeholder.png?height=40&width=40',
-//         stock: 0,
-//         price: 39.99,
-//         status: 'out-stock',
-//     },
-//     {
-//         id: 'prod-004',
-//         name: 'Coffee Maker',
-//         category: 'Home',
-//         salesCount: 287,
-//         image: '/placeholder.png?height=40&width=40',
-//         stock: 42,
-//         price: 89.99,
-//         status: 'in-stock',
-//     },
-//     {
-//         id: 'prod-005',
-//         name: 'Bluetooth Speaker',
-//         category: 'Electronics',
-//         salesCount: 512,
-//         image: '/placeholder.png?height=40&width=40',
-//         stock: 78,
-//         price: 79.99,
-//         status: 'in-stock',
-//     },
-//     {
-//         id: 'prod-006',
-//         name: 'Fitness Tracker',
-//         category: 'Fitness',
-//         salesCount: 176,
-//         image: '/placeholder.png?height=40&width=40',
-//         stock: 0,
-//         price: 59.99,
-//         status: 'out-stock',
-//     },
-// ];
-
-export const columns: ColumnDef<CategoryItem>[] = [
-    {
-        accessorKey: 'image',
-        header: 'Image',
-        cell: ({ row }) => {
-            const imagePath = row.original.image.startsWith('categories/') ? `/storage/${row.original.image}` : row.original.image;
-            return (
-                <div className="flex items-center justify-center">
-                    <img src={imagePath} alt={row.getValue('name')} width={40} height={40} className="rounded-md object-cover" />
-                </div>
-            );
-        },
-        enableSorting: false,
-    },
-    {
-        accessorKey: 'name',
-        header: ({ column }) => {
-            return (
-                <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-                    Name
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
-                </Button>
-            );
-        },
-        cell: ({ row }) => <div className="font-medium">{row.getValue('name')}</div>,
-    },
-
-    {
-        id: 'actions',
-        header: 'Actions',
-        enableHiding: false,
-        cell: ({ row }) => {
-            const id = row.original.id;
-            return (
-                <div className="flex items-center gap-2">
-                    <Button asChild variant="ghost" size="icon" className="h-8 w-8">
-                        <Link href={`/${id}`}>
-                            <Pencil className="h-4 w-4" />
-                            <span className="sr-only">Edit</span>
-                        </Link>
-                    </Button>
-                    <Button variant="ghost" size="icon" className="text-destructive h-8 w-8">
-                        <Trash className="h-4 w-4" />
-                        <span className="sr-only">Delete</span>
-                    </Button>
-                </div>
-            );
-        },
-    },
-];
-
 export default function CategoriesDataTable({ categories }: { categories: CategoryItem[] }) {
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
@@ -175,7 +59,88 @@ export default function CategoriesDataTable({ categories }: { categories: Catego
     const [rowSelection, setRowSelection] = React.useState({});
     const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
     const [showAddDialog, setShowAddDialog] = React.useState(false);
+    const [showEditDialog, setShowEditDialog] = React.useState(false);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
+    const [categoryToDelete, setCategoryToDelete] = React.useState<string | null>(null);
+    const [categoryToEdit, setCategoryToEdit] = React.useState<CategoryItem | null>(null);
+    const [images, setImages] = React.useState<File[]>([]);
+    
+    // Form for adding new categories
+    const { data, setData, processing, errors, reset } = useForm<Required<CreateCategoryItem>>({
+        name: '',
+        slug: '',
+        color: '',
+        image: null,
+        description: '',
+    });
+    
+    // Form for editing categories
+    const editForm = useForm<Required<CreateCategoryItem>>({
+        name: '',
+        slug: '',
+        color: '',
+        image: null,
+        description: '',
+    });
+    
+    // Define columns with updated action buttons
+    const columns: ColumnDef<CategoryItem>[] = [
+        {
+            accessorKey: 'image',
+            header: 'Image',
+            cell: ({ row }) => {
+                const imagePath = row.original.image.startsWith('categories/') ? `/storage/${row.original.image}` : row.original.image;
+                return (
+                    <div className="flex items-center justify-center">
+                        <img src={imagePath} alt={row.getValue('name')} width={40} height={40} className="rounded-md object-cover" />
+                    </div>
+                );
+            },
+            enableSorting: false,
+        },
+        {
+            accessorKey: 'name',
+            header: ({ column }) => {
+                return (
+                    <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+                        Name
+                        <ArrowUpDown className="ml-2 h-4 w-4" />
+                    </Button>
+                );
+            },
+            cell: ({ row }) => <div className="font-medium">{row.getValue('name')}</div>,
+        },
+        {
+            id: 'actions',
+            header: 'Actions',
+            enableHiding: false,
+            cell: ({ row }) => {
+                const category = row.original;
+                return (
+                    <div className="flex items-center gap-2">
+                        <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="h-8 w-8"
+                            onClick={() => handleEditClick(category)}
+                        >
+                            <Pencil className="h-4 w-4" />
+                            <span className="sr-only">Edit</span>
+                        </Button>
+                        <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="text-destructive h-8 w-8"
+                            onClick={() => handleDeleteClick(String(category.id))}
+                        >
+                            <Trash className="h-4 w-4" />
+                            <span className="sr-only">Delete</span>
+                        </Button>
+                    </div>
+                );
+            },
+        },
+    ];
 
     const table = useReactTable({
         data: categories,
@@ -205,11 +170,121 @@ export default function CategoriesDataTable({ categories }: { categories: Catego
         table.setPageSize(rowsPerPage);
     }, [rowsPerPage, table]);
 
+    // Handle Delete button click
+    const handleDeleteClick = (categoryId: string) => {
+        setCategoryToDelete(categoryId);
+        setShowDeleteDialog(true);
+    };
+
+    // Handle actual deletion
+    const handleDeleteConfirm = () => {
+        if (categoryToDelete) {
+            router.delete(`/dashboard/categories/${categoryToDelete}`, {
+                onSuccess: () => {
+                    toast.success('Category deleted successfully');
+                    setShowDeleteDialog(false);
+                    setCategoryToDelete(null);
+                },
+                onError: (errors) => {
+                    console.error(errors);
+                    toast.error('Failed to delete category');
+                }
+            });
+        }
+    };
+
+    // Handle bulk deletion of selected rows
     const handleDeleteSelected = () => {
-        // In a real application, you would delete the selected rows here
-        console.log('Deleting selected products:', table.getFilteredSelectedRowModel().rows);
-        setShowDeleteDialog(false);
-        setRowSelection({});
+        const selectedRows = table.getFilteredSelectedRowModel().rows;
+        const selectedIds = selectedRows.map(row => row.original.id);
+        
+        // Submit each delete request sequentially
+        Promise.all(selectedIds.map(id => 
+            fetch(`/dashboard/admin/categories/${id}/destroy`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                }
+            })
+        ))
+        .then(() => {
+            toast.success(`${selectedIds.length} categories deleted successfully`);
+            setShowDeleteDialog(false);
+            setRowSelection({});
+            window.location.reload(); // Refresh to see updated list
+        })
+        .catch(() => {
+            toast.error('Failed to delete some categories');
+        });
+    };
+
+    // Handle Edit button click
+    const handleEditClick = (category: CategoryItem) => {
+        setCategoryToEdit(category);
+        editForm.setData({
+            name: category.name || '',
+            slug: category.slug || '',
+            color: category.color || '',
+            image: null,
+            description: category.description || '',
+        });
+        setShowEditDialog(true);
+        setImages([]); // clear images for new upload
+    };
+
+    // Handle form submission for editing
+    const handleEditSubmit: React.FormEventHandler = (e) => {
+        e.preventDefault();
+        if (categoryToEdit) {
+            const formData = new FormData();
+            formData.append('name', editForm.data.name);
+            formData.append('description', editForm.data.description || '');
+            formData.append('color', editForm.data.color || '');
+            formData.append('slug', editForm.data.slug || '');
+            formData.append('_method', 'PUT'); // <-- important for Laravel
+            if (images.length > 0) {
+                formData.append('image', images[0]);
+            }
+            router.post(`/dashboard/categories/${categoryToEdit.id}`, formData, {
+                onSuccess: () => {
+                    toast.success('Category updated successfully');
+                    setShowEditDialog(false);
+                    setCategoryToEdit(null);
+                    setImages([]);
+                    editForm.reset();
+                },
+              onError: (errors) => {
+    console.error(errors);
+    // Show first error if available
+    if (errors && typeof errors === 'object') {
+        const firstError = Object.values(errors)[0];
+        toast.error(Array.isArray(firstError) ? firstError[0] : firstError);
+    } else {
+        toast.error('Failed to update category');
+    }
+}
+            });
+        }
+    };
+
+    // Handle form submission for adding
+    const handleAddSubmit: React.FormEventHandler = (e) => {
+        e.preventDefault();
+        if (images.length > 0) {
+            data.image = images[0];
+        }
+        
+        router.post('/dashboard/categories', data, {
+            onSuccess: () => {
+                reset();
+                setImages([]);
+                setShowAddDialog(false);
+                toast.success('Category created successfully');
+            },
+            onError: () => {
+                toast.error('Failed to create category');
+            }
+        });
     };
 
     const handleExportToExcel = () => {
@@ -229,33 +304,10 @@ export default function CategoriesDataTable({ categories }: { categories: Catego
 
         // Create workbook
         const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, 'Products');
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Categories');
 
         // Generate Excel file and trigger download
-        XLSX.writeFile(workbook, 'products.xlsx');
-    };
-    const [images, setImages] = React.useState<File[]>([]);
-    const { data, setData, processing, errors, reset } = useForm<Required<CreateCategoryItem>>({
-        name: '',
-        slug: '',
-        color: '',
-        image: null,
-        description: '',
-    });
-
-    const submit: React.FormEventHandler = (e) => {
-        e.preventDefault();
-        data.image = images[0];
-        console.log(data);
-        router.post('/dashboard/categories', data, {
-            onFinish: () => {
-                reset();
-                toast.success('Category Successfully');
-            },
-        });
-        // post(route('register'), {
-        //     onFinish: () => reset('password', 'password_confirmation'),
-        // });
+        XLSX.writeFile(workbook, 'categories.xlsx');
     };
 
     return (
@@ -267,7 +319,7 @@ export default function CategoriesDataTable({ categories }: { categories: Catego
                         <p className="text-muted-foreground text-sm">Manage your shop Categories</p>
                     </div>
                     <div className="flex items-center gap-2">
-                        <Button variant="outline" size="icon">
+                        <Button variant="outline" size="icon" onClick={() => window.location.reload()}>
                             <RefreshCw className="h-4 w-4" />
                         </Button>
                         <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
@@ -278,7 +330,7 @@ export default function CategoriesDataTable({ categories }: { categories: Catego
                                 </Button>
                             </DialogTrigger>
                             <DialogContent className="sm:max-w-[750px]">
-                                <form action="" onSubmit={submit}>
+                                <form action="" onSubmit={handleAddSubmit}>
                                     <DialogHeader>
                                         <DialogTitle>Add New Category</DialogTitle>
                                         <DialogDescription>Fill in the details to add a new category to your inventory.</DialogDescription>
@@ -433,23 +485,99 @@ export default function CategoriesDataTable({ categories }: { categories: Catego
                 </div>
             </CardFooter>
 
+            {/* Delete Confirmation Dialog for individual category */}
             <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                         <AlertDialogDescription>
-                            This action will delete {table.getFilteredSelectedRowModel().rows.length} selected product(s). This action cannot be
-                            undone.
+                            This action will delete the selected category. This action cannot be undone.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDeleteSelected} className="bg-destructive text-destructive-foreground">
+                        <AlertDialogCancel onClick={() => setCategoryToDelete(null)}>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDeleteConfirm} className="bg-destructive text-destructive-foreground">
                             Delete
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
+
+            {/* Edit Category Dialog */}
+            <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
+                <DialogContent className="sm:max-w-[750px]">
+                    <form onSubmit={handleEditSubmit}>
+                        <DialogHeader>
+                            <DialogTitle>Edit Category</DialogTitle>
+                            <DialogDescription>Update the details of this category.</DialogDescription>
+                        </DialogHeader>
+                        <div className="grid gap-6 py-4">
+                            <div className="grid gap-6 md:grid-cols-2">
+                                <div className="space-y-2">
+                                    <Label htmlFor="edit-name">Category Name</Label>
+                                    <Input 
+                                        id="edit-name" 
+                                        value={editForm.data.name} 
+                                        onChange={(e) => editForm.setData('name', e.target.value)} 
+                                    />
+                                    <InputError message={editForm.errors.name} className="mt-2" />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="edit-color">Category Tailwind Color Class</Label>
+                                    <Input 
+                                        id="edit-color" 
+                                        value={editForm.data.color} 
+                                        onChange={(e) => editForm.setData('color', e.target.value)} 
+                                    />
+                                    <InputError message={editForm.errors.color} className="mt-2" />
+                                </div>
+                            </div>
+                            <div className="grid w-full gap-1.5">
+                                <Label htmlFor="edit-description">Category Description</Label>
+                                <Textarea
+                                    id="edit-description"
+                                    value={editForm.data.description}
+                                    onChange={(e) => editForm.setData('description', e.target.value)}
+                                    placeholder="Type your description here."
+                                />
+                                <InputError message={editForm.errors.description} className="mt-2" />
+                            </div>
+                            <div className="mb-8">
+                                <h2 className="mb-3 text-lg font-semibold">Update Category Image</h2>
+                                <div className="rounded border p-4">
+                                    <CompactFileInput multiple={true} maxSizeMB={1} onChange={setImages} />
+                                    {categoryToEdit?.image && (
+                                        <div className="mt-2">
+                                            <p className="text-sm text-muted-foreground">Current image:</p>
+                                            <img 
+                                                src={categoryToEdit.image.startsWith('categories/') ? 
+                                                    `/storage/${categoryToEdit.image}` : categoryToEdit.image} 
+                                                alt={categoryToEdit.name} 
+                                                className="mt-2 h-16 w-16 rounded-md object-cover" 
+                                            />
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                        <DialogFooter>
+                            <Button 
+                                variant="outline" 
+                                onClick={() => {
+                                    setShowEditDialog(false);
+                                    setCategoryToEdit(null);
+                                    editForm.reset();
+                                }}
+                            >
+                                Cancel
+                            </Button>
+                            <Button disabled={editForm.processing} type="submit">
+                                {editForm.processing ? 'Updating...' : 'Update Category'}
+                            </Button>
+                        </DialogFooter>
+                    </form>
+                </DialogContent>
+            </Dialog>
         </Card>
     );
 }
