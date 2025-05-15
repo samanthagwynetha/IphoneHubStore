@@ -7,6 +7,7 @@ use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Database\Seeders\AdminUserSeeder;
+use Illuminate\Support\Facades\Hash;
 
 
 class DatabaseSeeder extends Seeder
@@ -22,6 +23,20 @@ class DatabaseSeeder extends Seeder
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
+        // User::factory()->create([
+        //     'name' => 'Test User',
+        //     'email' => 'test@example.com',
+        // ]);
+        User::updateOrCreate(
+            attributes: ['email' => 'admin@example.com'],
+            values: [
+                'name'=>'Admin',
+                'email'=>'admin@example.com',
+                'password'=> Hash::make('admin1234'),
+                'role'=>'admin',
+                'email_verified_at'=>now()
+            ]
+        );
         $categories= [
             [
                 'name'=> 'Beauty & Fragrance',

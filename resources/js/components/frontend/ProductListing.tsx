@@ -66,13 +66,13 @@ const ProductCard: React.FC<{
                 <img
                     src={imagePath}
                     alt={product.name}
-                    className="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
+                    className="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-105 "
                 />
 
                 {/* Badges */}
                 <div className="absolute top-3 left-3 flex flex-col gap-2">
                     {discountPercentage > 0 && (
-                        <span className="rounded-lg bg-red-500 px-2 py-1 text-xs font-bold text-white shadow-sm">{discountPercentage}% OFF</span>
+                        <span className="rounded-lg bg-black px-2 py-1 text-xs font-bold text-white shadow-sm">{discountPercentage}% OFF</span>
                     )}
                 </div>
 
@@ -186,7 +186,7 @@ const ProductListing = ({ products }: { products: ProductItem[] }) => {
                 <div>
                     <h2 className="flex items-center gap-2 text-3xl font-bold pl-3 text-gray-900 dark:text-white">
                         <span className="relative">
-                <div className='flex flex-col font-bold text-[40px] items-start justify-start text-start md:flex-col lg:flex-row'>
+                <div className='flex flex-col font-bold text-[30px] items-start justify-start text-start md:flex-col lg:flex-row'>
                 <h1 className='text-white'>The latest.</h1>
                 <h1 className='text-[#86868b]'> Take a look at what's new, right now.</h1>
             </div>
@@ -237,7 +237,7 @@ const ProductListing = ({ products }: { products: ProductItem[] }) => {
                         key={i}
                         onClick={() => setCurrentIndex(i)}
                         className={`h-2 w-2 rounded-full transition-all duration-300 ${
-                            i === currentIndex ? 'w-6 bg-red-500' : 'bg-gray-300 hover:bg-gray-400'
+                            i === currentIndex ? 'w-6 bg-white' : 'bg-gray-300 hover:bg-gray-400'
                         }`}
                         aria-label={`Go to slide ${i + 1}`}
                     />
@@ -247,7 +247,7 @@ const ProductListing = ({ products }: { products: ProductItem[] }) => {
             {/* View all button */}
             <div className="mt-8 flex justify-center">
                 <button className=" text-black rounded-lg border bg-white px-6 py-4 font-medium transition-colors duration-300 hover:bg-transparent hover:text-white hover:border-white">
-                    View All Sales
+                   <Link href={route('store')}>View all</Link>
                 </button>
             </div>
         </div>

@@ -54,156 +54,6 @@ export type Product = {
     status: 'in-stock' | 'out-stock';
 };
 
-// const products: Product[] = [
-//     {
-//         id: 'prod-001',
-//         name: 'Wireless Headphones',
-//         category: 'Electronics',
-//         salesCount: 342,
-//         image: '/placeholder.png?height=40&width=40',
-//         stock: 56,
-//         price: 129.99,
-//         status: 'in-stock',
-//     },
-//     {
-//         id: 'prod-002',
-//         name: 'Smart Watch',
-//         category: 'Electronics',
-//         salesCount: 189,
-//         image: '/placeholder.png?height=40&width=40',
-//         stock: 23,
-//         price: 249.99,
-//         status: 'in-stock',
-//     },
-//     {
-//         id: 'prod-003',
-//         name: 'Yoga Mat',
-//         category: 'Fitness',
-//         salesCount: 421,
-//         image: '/placeholder.png?height=40&width=40',
-//         stock: 0,
-//         price: 39.99,
-//         status: 'out-stock',
-//     },
-//     {
-//         id: 'prod-004',
-//         name: 'Coffee Maker',
-//         category: 'Home',
-//         salesCount: 287,
-//         image: '/placeholder.png?height=40&width=40',
-//         stock: 42,
-//         price: 89.99,
-//         status: 'in-stock',
-//     },
-//     {
-//         id: 'prod-005',
-//         name: 'Bluetooth Speaker',
-//         category: 'Electronics',
-//         salesCount: 512,
-//         image: '/placeholder.png?height=40&width=40',
-//         stock: 78,
-//         price: 79.99,
-//         status: 'in-stock',
-//     },
-//     {
-//         id: 'prod-006',
-//         name: 'Fitness Tracker',
-//         category: 'Fitness',
-//         salesCount: 176,
-//         image: '/placeholder.png?height=40&width=40',
-//         stock: 0,
-//         price: 59.99,
-//         status: 'out-stock',
-//     },
-// ];
-
-export const columns: ColumnDef<Product>[] = [
-    {
-        accessorKey: 'images',
-        header: 'Image',
-        cell: ({ row }) => {
-            return (
-                <div className="flex items-center justify-center">
-                    <img
-                        src={`/storage/${row.original.image}`}
-                        alt={row.getValue('name')}
-                        width={40}
-                        height={40}
-                        className="rounded-md object-cover"
-                    />
-                </div>
-            );
-        },
-        enableSorting: false,
-    },
-    {
-        accessorKey: 'name',
-        header: ({ column }) => {
-            return (
-                <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-                    Name
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
-                </Button>
-            );
-        },
-        cell: ({ row }) => <div className="font-medium">{row.getValue('name')}</div>,
-    },
-    {
-        accessorKey: 'price',
-        header: ({ column }) => {
-            return (
-                <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-                    Price
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
-                </Button>
-            );
-        },
-        cell: ({ row }) => {
-            const price = Number.parseFloat(row.getValue('price'));
-            const formatted = new Intl.NumberFormat('en-US', {
-                style: 'currency',
-                currency: 'USD',
-            }).format(price);
-
-            return <div>{formatted}</div>;
-        },
-    },
-    {
-        accessorKey: 'category',
-        header: 'Category',
-        cell: ({ row }) => {
-            const name = row.original.category.name;
-            return (
-                <Button variant="outline" size="sm">
-                    {name}
-                </Button>
-            );
-        },
-    },
-    {
-        id: 'actions',
-        header: 'Actions',
-        enableHiding: false,
-        cell: ({ row }) => {
-            const id = row.original.id;
-            return (
-                <div className="flex items-center gap-2">
-                    <Button asChild variant="ghost" size="icon" className="h-8 w-8">
-                        <Link href={`/${id}`}>
-                            <Pencil className="h-4 w-4" />
-                            <span className="sr-only">Edit</span>
-                        </Link>
-                    </Button>
-                    <Button variant="ghost" size="icon" className="text-destructive h-8 w-8">
-                        <Trash className="h-4 w-4" />
-                        <span className="sr-only">Delete</span>
-                    </Button>
-                </div>
-            );
-        },
-    },
-];
-
 export default function ProductsDataTable({
     categories,
     products,
@@ -214,7 +64,121 @@ export default function ProductsDataTable({
         value: number;
     }[];
 }) {
-    console.log(products);
+    // --- Edit dialog state
+    const [showEditDialog, setShowEditDialog] = React.useState(false);
+    const [productToEdit, setProductToEdit] = React.useState<Product | null>(null);
+    const [editImages, setEditImages] = React.useState<File[]>([]);
+    const { data: editData, setData: setEditData, processing: editProcessing, errors: editErrors, reset: resetEdit } = useForm({
+        name: '',
+        colors: '',
+        price: 0,
+        original_price: 0,
+        features: '',
+        description: '',
+        is_featured: false,
+        category_id: '',
+        image: null,
+        images: null,
+    });
+
+    // --- Table columns
+    const columns: ColumnDef<Product>[] = [
+        {
+            accessorKey: 'images',
+            header: 'Image',
+            cell: ({ row }) => (
+                <div className="flex items-center justify-center">
+                    <img
+                        src={`/storage/${row.original.image}`}
+                        alt={row.getValue('name')}
+                        width={40}
+                        height={40}
+                        className="rounded-md object-cover"
+                    />
+                </div>
+            ),
+            enableSorting: false,
+        },
+        {
+            accessorKey: 'name',
+            header: ({ column }) => (
+                <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+                    Name
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+            ),
+            cell: ({ row }) => <div className="font-medium">{row.getValue('name')}</div>,
+        },
+        {
+            accessorKey: 'price',
+            header: ({ column }) => (
+                <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+                    Price
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+            ),
+            cell: ({ row }) => {
+                const price = Number.parseFloat(row.getValue('price'));
+                const formatted = new Intl.NumberFormat('en-US', {
+                    style: 'currency',
+                    currency: 'USD',
+                }).format(price);
+
+                return <div>{formatted}</div>;
+            },
+        },
+        {
+            accessorKey: 'category',
+            header: 'Category',
+            cell: ({ row }) => {
+                const name = row.original.category.name;
+                return (
+                    <Button variant="outline" size="sm">
+                        {name}
+                    </Button>
+                );
+            },
+        },
+        {
+            id: 'actions',
+            header: 'Actions',
+            enableHiding: false,
+            cell: ({ row }) => (
+                <div className="flex items-center gap-2">
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8"
+                        onClick={() => {
+                            setProductToEdit(row.original);
+                            setEditData({
+                                name: row.original.name,
+                                colors: '', // Fill with actual data if available
+                                price: row.original.price,
+                                original_price: row.original.price,
+                                features: '', // Fill with actual data if available
+                                description: '', // Fill with actual data if available
+                                is_featured: false, // Fill with actual data if available
+                                category_id: row.original.category?.id?.toString() || '',
+                                image: null,
+                                images: null,
+                            });
+                            setShowEditDialog(true);
+                        }}
+                    >
+                        <Pencil className="h-4 w-4" />
+                        <span className="sr-only">Edit</span>
+                    </Button>
+                    <Button variant="ghost" size="icon" className="text-destructive h-8 w-8">
+                        <Trash className="h-4 w-4" />
+                        <span className="sr-only">Delete</span>
+                    </Button>
+                </div>
+            ),
+        },
+    ];
+
+    // --- Table logic
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
@@ -251,46 +215,7 @@ export default function ProductsDataTable({
         table.setPageSize(rowsPerPage);
     }, [rowsPerPage, table]);
 
-    const handleDeleteSelected = () => {
-        // In a real application, you would delete the selected rows here
-        console.log('Deleting selected products:', table.getFilteredSelectedRowModel().rows);
-        setShowDeleteDialog(false);
-        setRowSelection({});
-    };
-
-    const handleExportToExcel = () => {
-        // Get visible and filtered data
-        const exportData = table.getFilteredRowModel().rows.map((row) => {
-            const rowData = row.original;
-            return {
-                ID: rowData.id,
-                Name: rowData.name,
-                Category: rowData.category,
-                Status: rowData.status,
-                Stock: rowData.stock,
-                'Sales Count': rowData.salesCount,
-                Price: `$${rowData.price.toFixed(2)}`,
-            };
-        });
-
-        // Create worksheet
-        const worksheet = XLSX.utils.json_to_sheet(exportData);
-
-        // Create workbook
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, 'Products');
-
-        // Generate Excel file and trigger download
-        XLSX.writeFile(workbook, 'products.xlsx');
-    };
-
-    // Calculate total value of all products
-    const totalValue = products.reduce((sum, product) => sum + product.price * product.stock, 0);
-    const formattedTotalValue = new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-    }).format(totalValue);
-
+    // --- Add product form
     const [images, setImages] = React.useState<File[]>([]);
     const { data, setData, processing, errors, reset } = useForm<Required<CreateProductItem>>({
         name: '',
@@ -313,20 +238,164 @@ export default function ProductsDataTable({
         data.colors = typeof data.colors === 'string' ? data.colors.split(',') : data.colors;
         data.features = typeof data.features === 'string' ? data.features.split(',') : data.features;
         data.category_id = Number(data.category_id);
-        console.log(data);
         router.post('/dashboard/products', data, {
             onFinish: () => {
                 reset();
                 toast.success('Product Successfully');
             },
         });
-        // post(route('register'), {
-        //     onFinish: () => reset('password', 'password_confirmation'),
-        // });
     };
+
+    // --- Edit product form
+    const submitEdit: React.FormEventHandler = (e) => {
+        e.preventDefault();
+        if (!productToEdit) return;
+        const updateData = {
+            ...editData,
+            image: editImages[0] || null,
+            images: editImages.length > 0 ? editImages : null,
+            category_id: Number(editData.category_id),
+        };
+        router.post(`/dashboard/products/${productToEdit.id}?_method=PUT`, updateData, {
+            onFinish: () => {
+                resetEdit();
+                setShowEditDialog(false);
+                setProductToEdit(null);
+                toast.success('Product updated!');
+            },
+        });
+    };
+
+    // --- Export to Excel
+    const handleExportToExcel = () => {
+        const exportData = table.getFilteredRowModel().rows.map((row) => {
+            const rowData = row.original;
+            return {
+                ID: rowData.id,
+                Name: rowData.name,
+                Category: rowData.category,
+                Status: rowData.status,
+                Stock: rowData.stock,
+                'Sales Count': rowData.salesCount,
+                Price: `$${rowData.price.toFixed(2)}`,
+            };
+        });
+        const worksheet = XLSX.utils.json_to_sheet(exportData);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Products');
+        XLSX.writeFile(workbook, 'products.xlsx');
+    };
+
+    // --- Total value
+    const totalValue = products.reduce((sum, product) => sum + product.price * product.stock, 0);
+    const formattedTotalValue = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+    }).format(totalValue);
+
+    // --- Edit Dialog JSX
+    const editDialog = (
+        <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
+            <DialogContent className="sm:max-w-[750px]">
+                <form onSubmit={submitEdit}>
+                    <DialogHeader>
+                        <DialogTitle>Edit Product</DialogTitle>
+                        <DialogDescription>Update the product details below.</DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-6 py-4">
+                        <div className="grid gap-6 md:grid-cols-2">
+                            <div className="space-y-2">
+                                <Label htmlFor="edit-name">Product Name</Label>
+                                <Input id="edit-name" value={editData.name} onChange={e => setEditData('name', e.target.value)} />
+                                <InputError message={editErrors.name} className="mt-2" />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="edit-colors">Product Colors</Label>
+                                <Input id="edit-colors" value={editData.colors} onChange={e => setEditData('colors', e.target.value)} />
+                                <InputError message={editErrors.colors} className="mt-2" />
+                            </div>
+                        </div>
+                        <div className="grid gap-6 md:grid-cols-3">
+                            <div className="space-y-2">
+                                <Label htmlFor="edit-price">Price</Label>
+                                <Input id="edit-price" value={editData.price} onChange={e => setEditData('price', Number(e.target.value))} />
+                                <InputError message={editErrors.price} className="mt-2" />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="edit-original-price">Original Price</Label>
+                                <Input id="edit-original-price" value={editData.original_price} onChange={e => setEditData('original_price', Number(e.target.value))} />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="edit-category">Select Category</Label>
+                                <Select onValueChange={value => setEditData('category_id', value)} value={editData.category_id}>
+                                    <SelectTrigger className="w-[180px]">
+                                        <SelectValue placeholder="Category" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {categories.map(item => (
+                                            <SelectItem key={item.value} value={item.value.toString()}>
+                                                {item.label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
+                        <div className="grid gap-4 md:grid-cols-2">
+                            <div className="space-y-2">
+                                <Label htmlFor="edit-features">Product Features (comma separated)</Label>
+                                <Input id="edit-features" value={editData.features} onChange={e => setEditData('features', e.target.value)} />
+                                <InputError message={editErrors.features} className="mt-2" />
+                            </div>
+                            <div className="items-top flex space-x-2">
+               
+                            {/* <Checkbox
+                                checked={editData.is_featured}
+                                onCheckedChange={(value) => setEditData('is_featured', value as boolean)}
+                                id="edit-isFeatured"
+                            /> */}
+                                                        <div className="grid gap-1.5 leading-none">
+                                    <label htmlFor="edit-isFeatured" className="text-sm leading-none font-medium">
+                                        Is Featured
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="grid gap-4 md:grid-cols-2">
+                            <div className="grid w-full gap-1.5">
+                                <Label htmlFor="edit-description">Product Description</Label>
+                                <Textarea
+                                    value={editData.description}
+                                    onChange={e => setEditData('description', e.target.value)}
+                                    placeholder="Type your description here."
+                                    id="edit-description"
+                                />
+                                <InputError message={editErrors.description} className="mt-2" />
+                            </div>
+                            <div>
+                                <h2 className="mb-3 text-lg font-semibold">Upload product Images</h2>
+                                <div className="rounded border p-4">
+                                    <CompactFileInput multiple={true} maxSizeMB={1} onChange={setEditImages} />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setShowEditDialog(false)}>
+                            Cancel
+                        </Button>
+                        <Button disabled={editProcessing} type="submit">
+                            {editProcessing ? 'Updating...' : 'Update Product'}
+                        </Button>
+                    </DialogFooter>
+                </form>
+            </DialogContent>
+        </Dialog>
+    );
 
     return (
         <Card className="w-full">
+            {editDialog}
             <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
                     <div>
@@ -407,8 +476,9 @@ export default function ProductsDataTable({
 
                                             <div className="items-top flex space-x-2">
                                                 <Checkbox
+                                      
                                                     checked={data.is_featured}
-                                                    onCheckedChange={(value) => setData('is_featured', !!value)}
+                                                    onCheckedChange={(value) => setData('is_featured', value as boolean)}
                                                     id="isFeatured"
                                                 />
                                                 <div className="grid gap-1.5 leading-none">
@@ -489,13 +559,11 @@ export default function ProductsDataTable({
                         <TableHeader>
                             {table.getHeaderGroups().map((headerGroup) => (
                                 <TableRow key={headerGroup.id}>
-                                    {headerGroup.headers.map((header) => {
-                                        return (
-                                            <TableHead key={header.id}>
-                                                {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                                            </TableHead>
-                                        );
-                                    })}
+                                    {headerGroup.headers.map((header) => (
+                                        <TableHead key={header.id}>
+                                            {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                                        </TableHead>
+                                    ))}
                                 </TableRow>
                             ))}
                         </TableHeader>
@@ -571,7 +639,7 @@ export default function ProductsDataTable({
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDeleteSelected} className="bg-destructive text-destructive-foreground">
+                        <AlertDialogAction onClick={() => {}} className="bg-destructive text-destructive-foreground">
                             Delete
                         </AlertDialogAction>
                     </AlertDialogFooter>
