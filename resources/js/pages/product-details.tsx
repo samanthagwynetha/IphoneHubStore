@@ -101,28 +101,20 @@ const ProductDetails = ({ product, similarProducts }: { product: Product; simila
 
     return (
         <ShopFrontLayout>
-            <div className="mx-auto max-w-6xl bg-white px-4 py-8">
+            <div className="mx-auto max-w-6xl bg-[#181818] px-4 py-8 mb-50">
                 {/* Breadcrumb */}
                 <nav className="mb-8 flex text-sm">
-                    <a href="#" className="text-gray-500 hover:text-gray-700">
+                    <a href="/" className="text-white hover:text-gray-700">
                         Home
                     </a>
                     <ChevronRight className="mx-2 h-4 w-4 self-center text-gray-400" />
-                    <a href="#" className="text-gray-500 hover:text-gray-700">
-                        Office Furniture
-                    </a>
-                    <ChevronRight className="mx-2 h-4 w-4 self-center text-gray-400" />
-                    <a href="#" className="text-gray-500 hover:text-gray-700">
-                        Chairs
-                    </a>
-                    <ChevronRight className="mx-2 h-4 w-4 self-center text-gray-400" />
-                    <span className="font-medium text-gray-900">{product.name}</span>
+                    <span className="font-medium text-white">{product.name}</span>
                 </nav>
 
                 <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">
                     {/* Product Images */}
                     <div className="space-y-6">
-                        <div className="relative aspect-square overflow-hidden rounded-xl bg-gray-100">
+                        <div className="relative aspect-square overflow-hidden rounded-none bg-gray-100">
                             <img
                                 src={`/storage/${product.images[selectedImage]}`}
                                 alt={product.name}
@@ -138,8 +130,8 @@ const ProductDetails = ({ product, similarProducts }: { product: Product; simila
                                     <button
                                         key={index}
                                         onClick={() => setSelectedImage(index)}
-                                        className={`relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg ${
-                                            selectedImage === index ? 'ring-2 ring-indigo-600' : 'ring-1 ring-gray-200'
+                                        className={`relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-none ${
+                                            selectedImage === index ? 'ring-2 ' : 'ring-1 ring-gray-200'
                                         }`}
                                     >
                                         <img src={imagePath} alt={`${product.name} - View ${index + 1}`} className="object-cover" sizes="80px" />
@@ -152,7 +144,7 @@ const ProductDetails = ({ product, similarProducts }: { product: Product; simila
                     {/* Product Info */}
                     <div className="flex flex-col space-y-6">
                         <div>
-                            <h1 className="text-3xl font-bold text-gray-900">{product.name}</h1>
+                            <h1 className="text-3xl font-bold text-white">{product.name}</h1>
                             {/* <div className="mt-2 flex items-center">
                                 <div className="flex items-center">
                                     {[...Array(5)].map((_, i) => (
@@ -168,7 +160,7 @@ const ProductDetails = ({ product, similarProducts }: { product: Product; simila
                                         />
                                     ))}
                                 </div>
-                                <p className="ml-2 text-sm text-gray-500">
+                                <p className="ml-2 text-sm text-white">
                                     {product.rating} ({product.reviewCount} reviews)
                                 </p>
                             </div> */}
@@ -177,9 +169,9 @@ const ProductDetails = ({ product, similarProducts }: { product: Product; simila
                         <div className="border-t border-b py-4">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <p className="text-3xl font-bold text-gray-900">${product.price}</p>
+                                    <p className="text-3xl font-bold text-white">${product.price}</p>
                                     {product.originalPrice && (
-                                        <p className="text-sm text-gray-500 line-through">${product.originalPrice.toFixed(2)}</p>
+                                        <p className="text-sm text-white line-through">${product.originalPrice.toFixed(2)}</p>
                                     )}
                                 </div>
                                 <div className="flex items-center">
@@ -193,7 +185,7 @@ const ProductDetails = ({ product, similarProducts }: { product: Product; simila
 
                         <div className="space-y-6">
                             <div>
-                                <h3 className="text-sm font-medium text-gray-900">Color</h3>
+                                <h3 className="text-sm font-medium text-white">Color</h3>
                                 <div className="mt-2 flex space-x-3">
                                     {product.colors.map((colorStr, index) => {
                                         const color = {
@@ -217,16 +209,16 @@ const ProductDetails = ({ product, similarProducts }: { product: Product; simila
                             </div>
 
                             <div>
-                                <h3 className="text-sm font-medium text-gray-900">Quantity</h3>
-                                <div className="mt-2 flex w-32 items-center rounded-md border border-gray-200">
+                                <h3 className="text-sm font-medium text-white">Quantity</h3>
+                                <div className="mt-2 flex w-32 items-center rounded-none border border-gray-200">
                                     <button
                                         onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                                        className="px-3 py-2 text-gray-500 hover:text-gray-700"
+                                        className="px-3 py-2 text-white hover:text-gray-700"
                                     >
                                         -
                                     </button>
                                     <span className="flex-1 text-center">{quantity}</span>
-                                    <button onClick={() => setQuantity(quantity + 1)} className="px-3 py-2 text-gray-500 hover:text-gray-700">
+                                    <button onClick={() => setQuantity(quantity + 1)} className="px-3 py-2 text-white hover:text-gray-700">
                                         +
                                     </button>
                                 </div>
@@ -234,33 +226,33 @@ const ProductDetails = ({ product, similarProducts }: { product: Product; simila
                         </div>
 
                         <div className="flex space-x-4">
-                            <button className="flex-1 rounded-md bg-indigo-600 px-4 py-3 text-sm font-medium text-white transition-all duration-200 hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none">
+                            <button className="flex-1 rounded-none bg-white px-4 py-3 text-sm font-medium text-black transition-all duration-200 hover:bg-transparent hover:text-white border hover:border-white focus:ring-2  focus:ring-offset-2 focus:outline-none">
                                 <div className="flex items-center justify-center">
                                     <ShoppingCart className="mr-2 h-5 w-5" />
                                     Add to Cart
                                 </div>
                             </button>
-                            <button className="rounded-md border border-gray-300 p-3 transition-all duration-200 hover:bg-gray-50">
-                                <Heart className="h-5 w-5 text-gray-500" />
+                            <button className="rounded-none border border-gray-300 p-3 transition-all duration-200 hover:bg-gray-50">
+                                <Heart className="h-5 w-5 text-white hover:text-black" />
                             </button>
-                            <button className="rounded-md border border-gray-300 p-3 transition-all duration-200 hover:bg-gray-50">
-                                <Share2 className="h-5 w-5 text-gray-500" />
+                            <button className="rounded-none border border-gray-300 p-3 transition-all duration-200 hover:bg-gray-50">
+                                <Share2 className="h-5 w-5 text-white hover:text-black" />
                             </button>
                         </div>
 
                         <div className="border-t pt-4">
-                            <h3 className="text-sm font-medium text-gray-900">Product Description</h3>
-                            <p className="mt-2 leading-relaxed text-gray-600">{product.description}</p>
+                            <h3 className="text-none font-bold text-white">Product Description</h3>
+                            <p className="mt-2 leading-relaxed text-sm text-[#fbfcf8]">{product.description}</p>
                         </div>
 
                         <div>
-                            <h3 className="text-sm font-medium text-gray-900">Features</h3>
-                            <ul className="mt-2 space-y-2">
+                            <h3 className="text-none font-bold text-white">Features</h3>
+                            <ul className="mt-2 space-y-2 text-sm ">
                                 {product.features.map((feature, index) => {
                                     return (
                                         <li key={index} className="flex items-start">
                                             <Check className="mr-2 h-5 w-5 flex-shrink-0 text-green-500" />
-                                            <span className="text-gray-600">{feature}</span>
+                                            <span className="text-[#fbfcf8]">{feature}</span>
                                         </li>
                                     );
                                 })}

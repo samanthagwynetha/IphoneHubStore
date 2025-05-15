@@ -1,5 +1,6 @@
 
 import React, { useEffect, useRef, useState } from 'react';
+import ProductListing from './ProductListing';
 
 const categories = [
   { id: 1, name: 'iPhones', icon: '/images/icons/mobile-notch.svg' },
@@ -78,7 +79,6 @@ export default function StorePage() {
    
     <div className=" min-h-screen transition-colors duration-300">
       {/* Toggle Button */}
-     
 
       {/* Hero Section */}
       <section className="text-center text-black dark:text-white mb-16 py-6">
