@@ -20,6 +20,7 @@ Route::get('/', [HomeController::class,'get_home_data'])->name('home');
 
 
 Route::get('/products/{slug}', [HomeController::class,'show_detail'])->name('detail');
+Route::get('/Allproducts', [HomeController::class,'getproducts'])->name('productlist');
 
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -64,6 +65,8 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 });
 
 Route::get('/users',[AuthenticatedSessionController::class,'getusers'] )->name('Users');
+Route::get('/users',[AuthenticatedSessionController::class,'getusers'] )->name('Users');
+
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
