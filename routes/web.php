@@ -24,20 +24,9 @@ Route::get('/Allproducts', [HomeController::class,'getproducts'])->name('product
 
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    // Route::get('dashboard', function () {
-    //     return Inertia::render('dashboard/index');
-    // })->name('dashboard');
-
     Route::get('/store', function () {
         return Inertia::render('resources/js/components/frontend/StorePage.tsx');
     })->name('store.index');
-
-    // Route::get('/dashboard/products',[ProductController::class,'list_products'] )->name('dashboard.products.index');
-    // Route::post('/dashboard/products',[ProductController::class,'save_product'] )->name('dashboard.products.save');
-
-
-    // Route::get('/dashboard/categories',[CategoryController::class,'list_categories'] )->name('dashboard.categories.index');
-    // Route::post('/dashboard/categories', [CategoryController::class,'save_category'])->name('dashboard.categories.save');
 });
 
 
