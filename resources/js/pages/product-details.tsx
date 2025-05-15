@@ -4,8 +4,9 @@ import ShopFrontLayout from '@/layouts/shop-front-layout';
 import { SimilarProduct } from '@/types/products';
 // ProductDetail.tsx
 import { Check, ChevronRight, Heart, Share2, ShoppingCart } from 'lucide-react';
-
+import { router } from '@inertiajs/react';
 import { useState } from 'react';
+import { toast } from 'sonner';
 
 // Types
 interface Product {
@@ -92,6 +93,7 @@ interface Product {
 //     },
 // ];
 
+
 const ProductDetails = ({ product, similarProducts }: { product: Product; similarProducts: SimilarProduct }) => {
     console.log(product, similarProducts);
     const [selectedImage, setSelectedImage] = useState(0);
@@ -99,6 +101,28 @@ const ProductDetails = ({ product, similarProducts }: { product: Product; simila
 
     const [quantity, setQuantity] = useState(1);
 
+    const addToCart: React.MouseEventHandler = (e) => {
+        e.preventDefault();
+    
+        const data = {
+            product_id: product.id,
+            quantity: quantity,
+        };
+    
+        router.post('/products/addCart', data, {
+            preserveScroll: true,
+            onSuccess: () => {
+                // You can show a toast or redirect here
+                toast.success('Added to cart!');
+            },
+            onError: (errors) => {
+                console.error(errors);
+                toast.error('Failed to add to cart.');
+            },
+        });
+    };
+
+    
     return (
         <ShopFrontLayout>
             <div className="mx-auto max-w-6xl bg-white px-4 py-8">
@@ -195,24 +219,25 @@ const ProductDetails = ({ product, similarProducts }: { product: Product; simila
                             <div>
                                 <h3 className="text-sm font-medium text-gray-900">Color</h3>
                                 <div className="mt-2 flex space-x-3">
-                                    {product.colors.map((colorStr, index) => {
-                                        const color = {
-                                            name: colorStr.split('=')[0],
-                                            value: colorStr.split('=')[1],
-                                        };
-                                        return (
-                                            <button
-                                                key={index}
-                                                onClick={() => setSelectedColor(index)}
-                                                className={`relative h-10 w-10 rounded-full ${
-                                                    selectedColor === index ? 'ring-2 ring-indigo-600 ring-offset-2' : ''
-                                                }`}
-                                                title={color.name}
-                                            >
-                                                <span className="absolute inset-0 rounded-full" style={{ backgroundColor: color.value }}></span>
-                                            </button>
-                                        );
-                                    })}
+                                {product.colors && product.colors.length > 0 && product.colors.map((colorStr, index) => {
+                                    const [name, value] = colorStr.split('=');
+                                    const color = { name, value };
+                                    return (
+                                        <button
+                                            key={index}
+                                            onClick={() => setSelectedColor(index)}
+                                            className={`relative h-10 w-10 rounded-full ${
+                                                selectedColor === index ? 'ring-2 ring-indigo-600 ring-offset-2' : ''
+                                            }`}
+                                            title={color.name}
+                                        >
+                                            <span
+                                                className="absolute inset-0 rounded-full"
+                                                style={{ backgroundColor: color.value }}
+                                            ></span>
+                                        </button>
+                                    );
+                                })}
                                 </div>
                             </div>
 
@@ -234,7 +259,7 @@ const ProductDetails = ({ product, similarProducts }: { product: Product; simila
                         </div>
 
                         <div className="flex space-x-4">
-                            <button className="flex-1 rounded-md bg-indigo-600 px-4 py-3 text-sm font-medium text-white transition-all duration-200 hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none">
+                            <button onClick={addToCart} className="flex-1 rounded-md bg-indigo-600 px-4 py-3 text-sm font-medium text-white transition-all duration-200 hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none">
                                 <div className="flex items-center justify-center">
                                     <ShoppingCart className="mr-2 h-5 w-5" />
                                     Add to Cart

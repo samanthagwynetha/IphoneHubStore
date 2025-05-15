@@ -6,6 +6,8 @@ use App\Models\Category;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Database\Seeders\AdminUserSeeder;
+
 
 class DatabaseSeeder extends Seeder
 {
@@ -16,10 +18,10 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        // User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+        User::factory()->create([
+            'name' => 'Test User',
+            'email' => 'test@example.com',
+        ]);
         $categories= [
             [
                 'name'=> 'Beauty & Fragrance',
@@ -43,5 +45,9 @@ class DatabaseSeeder extends Seeder
         foreach($categories as $category){
             Category::create($category);
         }
+
+        $this->call([
+            AdminUserSeeder::class,
+        ]);
     }
 }
