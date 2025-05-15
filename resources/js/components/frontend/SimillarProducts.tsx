@@ -5,7 +5,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 export default function SimilarProducts({ similarProducts }: { similarProducts: ProductItem[] }) {
     return (
         <div className="mt-16">
-            <div className="flex items-center justify-between mt-20">
+            <div className="flex items-center justify-between ">
                 <h2 className="text-2xl font-bold text-white">Similar Products</h2>
                 <div className="flex space-x-2">
                     <button className="rounded-full border border-gray-300 p-2 transition-all duration-200 hover:bg-gray-50">
@@ -30,9 +30,9 @@ export default function SimilarProducts({ similarProducts }: { similarProducts: 
                             />
                         </div>
                         <div className="mt-4">
-                            <h3 className="text-sm font-medium text-gray-900">{product.name}</h3>
+                            <h3 className="text-sm font-medium text-white">{product.name}</h3>
 
-                            <p className="mt-1 text-sm font-medium text-gray-900">${product.price}</p>
+                            <p className="mt-1 text-sm font-medium text-white">${product.price}</p>
                         </div>
                     </Link>
                 ))}

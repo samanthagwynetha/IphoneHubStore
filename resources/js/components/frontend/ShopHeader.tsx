@@ -71,22 +71,26 @@ export default function ShopHeader({ children }: { children: React.ReactNode }) 
     };
     const [showSearch, setShowSearch] = useState(false)
 
-    const navitems = ['Store', 'About']
+   const navitems = [
+  { name: 'Store', href: '/store' },
+  { name: 'About', href: '/about' },
+];
 
-    const NavCont =({}) => {
-    const { url } =usePage();
-    return (
-        <ul className="flex flex-row items-center gap-6 text-[#86868b] text-sm">
-      {navitems.map((item) => (
-        <li key={item} className="flex flex-row hover:text-white duration-200">
-          <Link href={item === 'Store' ? '/store' : '/'} className={url === '/' ? '' : ''}>
-            {item}
+const NavCont = () => {
+  const { url } = usePage();
+
+  return (
+    <ul className="flex flex-row items-center gap-6 text-[#86868b] text-sm">
+      {navitems.map(({ name, href }) => (
+        <li key={name} className="flex flex-row hover:text-white duration-200">
+          <Link href={href} className={url === href ? 'text-white' : ''}>
+            {name}
           </Link>
         </li>
       ))}
     </ul>
-    )
-}
+  );
+};
 
     return (
         <header className={`sticky top-0 z-50 w-full border-b transition-all duration-300 ${isScrolled ? 'shadow-md' : ''}`}>

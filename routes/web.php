@@ -35,12 +35,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Route::post('/dashboard/categories', [CategoryController::class,'save_category'])->name('dashboard.categories.save');
 });
 
-
-Route::middleware(['auth', 'role:user'])->group(function () {
-    Route::get('/store', function () {
-        return Inertia::render('resources/js/components/frontend/StorePage.tsx');
-    })->name('store.index');
-});
+Route::get('/store', [ProductController::class, 'store'])->name('store');
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('dashboard', function () {

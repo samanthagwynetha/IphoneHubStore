@@ -101,7 +101,7 @@ const ProductDetails = ({ product, similarProducts }: { product: Product; simila
 
     return (
         <ShopFrontLayout>
-            <div className="mx-auto max-w-6xl bg-[#181818] px-4 py-8 mb-50">
+            <div className="mx-auto max-w-6xl bg-[#181818] px-4 py-8 mb-50 ">
                 {/* Breadcrumb */}
                 <nav className="mb-8 flex text-sm">
                     <a href="/" className="text-white hover:text-gray-700">
@@ -260,6 +260,7 @@ const ProductDetails = ({ product, similarProducts }: { product: Product; simila
                         </div>
                     </div>
                 </div>
+                <div className=' border-b py-4'></div>
                 {/* Similar Products */}
                 <SimilarProducts similarProducts={similarProducts} />
             </div>

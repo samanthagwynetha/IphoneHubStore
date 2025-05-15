@@ -61,6 +61,7 @@ class ProductController extends Controller
             'categories' => $categories,
             'filters' => $request->only(['search', 'category', 'min_price', 'max_price', 'sort'])
         ]);
+          
     }
 
     /**
@@ -114,3 +115,5 @@ class ProductController extends Controller
         ]);
     }
 }
+
+
