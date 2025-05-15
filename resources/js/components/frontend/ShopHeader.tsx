@@ -137,6 +137,7 @@ export default function ShopHeader({ children }: { children: React.ReactNode }) 
         
         // const quantity = 
 
+
         router.patch(`http://127.0.0.1:8000/updateItem/${itemId}`, { type }, {
           onSuccess: () => {
             console.log('Quantity updated')
@@ -164,6 +165,26 @@ export default function ShopHeader({ children }: { children: React.ReactNode }) 
     const calculateTotal = () => {
         return cartItems.reduce((total, item) => total + parseFloat(item.product.price) * item.quantity, 0);
     };
+   const navitems = [
+  { name: 'Store', href: '/store' },
+  { name: 'About', href: '/about' },
+];
+
+const NavCont = () => {
+  const { url } = usePage();
+
+  return (
+    <ul className="flex flex-row items-center gap-6 text-[#86868b] text-sm">
+      {navitems.map(({ name, href }) => (
+        <li key={name} className="flex flex-row hover:text-white duration-200">
+          <Link href={href} className={url === href ? 'text-white' : ''}>
+            {name}
+          </Link>
+        </li>
+      ))}
+    </ul>
+  );
+};
 
     return (
         // <div>

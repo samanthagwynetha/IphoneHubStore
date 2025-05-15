@@ -47,6 +47,7 @@ Route::middleware(['auth', 'role:user'])->group(function () {
     Route::patch('/updateItem/{id}', [CartController::class, 'update'])->name('get.cart');
     Route::delete('/removeItem/{id}', [CartController::class, 'destroy'])->name('remove.cart');
 });
+Route::get('/store', [ProductController::class, 'store'])->name('store');
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('dashboard', function () {
