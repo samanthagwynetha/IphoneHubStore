@@ -19,13 +19,12 @@ export default function Products({ categories, products }: { categories: Categor
             name: item.name,
             category: item.category,
             salesCount: 0,
-            image: item.images[0],
+           image: item.images?.[0] ?? null,
             stock: 0,
             price: item.price,
             status: item.in_stock ? 'in-stock' : 'out-stock',
         };
     });
-    console.log(data);
     const categoryOptions = categories.map((item) => {
         return {
             label: item.name,

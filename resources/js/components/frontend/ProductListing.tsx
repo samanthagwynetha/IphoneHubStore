@@ -22,106 +22,106 @@ type Product = {
 };
 
 // Sample product data with Unsplash images
-const sampleProducts: Product[] = [
-    {
-        id: '1',
-        name: 'Italian Leather Crossbody Bag',
-        originalPrice: 249.99,
-        discountPrice: 189.99,
-        discountPercentage: 24,
-        description: 'Handcrafted in Florence with premium full-grain leather',
-        image: 'https://images.unsplash.com/photo-1594223274512-ad4803739b7c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80',
-        category: 'Accessories',
-        rating: 4.9,
-        isNew: true,
-        stock: 15,
-    },
-    {
-        id: '2',
-        name: 'Automatic Chronograph Watch',
-        originalPrice: 599.99,
-        discountPrice: 449.99,
-        discountPercentage: 25,
-        description: 'Swiss-made movement with sapphire crystal and exhibition caseback',
-        image: 'https://images.unsplash.com/photo-1614164185128-e4ec99c436d7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80',
-        category: 'Watches',
-        rating: 4.8,
-        stock: 8,
-    },
-    {
-        id: '3',
-        name: 'Premium Wireless Earbuds',
-        originalPrice: 199.99,
-        discountPrice: 149.99,
-        discountPercentage: 25,
-        description: 'Active noise cancellation with 30-hour battery life',
-        image: 'https://images.unsplash.com/photo-1590658268037-6bf12165a8df?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80',
-        category: 'Electronics',
-        rating: 4.7,
-        stock: 22,
-    },
-    {
-        id: '4',
-        name: 'Pure Cashmere Sweater',
-        originalPrice: 299.99,
-        discountPrice: 199.99,
-        discountPercentage: 33,
-        description: 'Ultra-soft, sustainably sourced cashmere in a relaxed fit',
-        image: 'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80',
-        category: 'Clothing',
-        rating: 4.6,
-        stock: 10,
-    },
-    {
-        id: '5',
-        name: 'Smart Home Security Camera',
-        originalPrice: 179.99,
-        discountPrice: 129.99,
-        discountPercentage: 28,
-        description: '4K resolution with night vision and two-way audio',
-        image: 'https://images.unsplash.com/photo-1580745294621-2914fd8fee67?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80',
-        category: 'Electronics',
-        rating: 4.5,
-        isNew: true,
-        stock: 18,
-    },
-    {
-        id: '6',
-        name: 'Artisanal Ceramic Pour-Over Set',
-        originalPrice: 89.99,
-        discountPrice: 64.99,
-        discountPercentage: 28,
-        description: 'Hand-thrown ceramic pour-over coffee dripper with matching cup',
-        image: 'https://images.unsplash.com/photo-1516543647435-f8c78a45081f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80',
-        category: 'Home & Kitchen',
-        rating: 4.7,
-        stock: 12,
-    },
-    {
-        id: '7',
-        name: 'Designer Sunglasses',
-        originalPrice: 159.99,
-        discountPrice: 99.99,
-        discountPercentage: 38,
-        description: 'Polarized lenses with premium acetate frames',
-        image: 'https://images.unsplash.com/photo-1572635196237-14b3f281503f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80',
-        category: 'Accessories',
-        rating: 4.8,
-        stock: 9,
-    },
-    {
-        id: '8',
-        name: 'Luxury Scented Candle',
-        originalPrice: 69.99,
-        discountPrice: 49.99,
-        discountPercentage: 29,
-        description: 'Hand-poured soy wax with essential oils, 60-hour burn time',
-        image: 'https://images.unsplash.com/photo-1602178141046-c9fe5b7eade4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80',
-        category: 'Home & Decor',
-        rating: 4.6,
-        stock: 20,
-    },
-];
+// const sampleProducts: Product[] = [
+//     {
+//         id: '1',
+//         name: 'Italian Leather Crossbody Bag',
+//         originalPrice: 249.99,
+//         discountPrice: 189.99,
+//         discountPercentage: 24,
+//         description: 'Handcrafted in Florence with premium full-grain leather',
+//         image: 'https://images.unsplash.com/photo-1594223274512-ad4803739b7c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80',
+//         category: 'Accessories',
+//         rating: 4.9,
+//         isNew: true,
+//         stock: 15,
+//     },
+//     {
+//         id: '2',
+//         name: 'Automatic Chronograph Watch',
+//         originalPrice: 599.99,
+//         discountPrice: 449.99,
+//         discountPercentage: 25,
+//         description: 'Swiss-made movement with sapphire crystal and exhibition caseback',
+//         image: 'https://images.unsplash.com/photo-1614164185128-e4ec99c436d7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80',
+//         category: 'Watches',
+//         rating: 4.8,
+//         stock: 8,
+//     },
+//     {
+//         id: '3',
+//         name: 'Premium Wireless Earbuds',
+//         originalPrice: 199.99,
+//         discountPrice: 149.99,
+//         discountPercentage: 25,
+//         description: 'Active noise cancellation with 30-hour battery life',
+//         image: 'https://images.unsplash.com/photo-1590658268037-6bf12165a8df?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80',
+//         category: 'Electronics',
+//         rating: 4.7,
+//         stock: 22,
+//     },
+//     {
+//         id: '4',
+//         name: 'Pure Cashmere Sweater',
+//         originalPrice: 299.99,
+//         discountPrice: 199.99,
+//         discountPercentage: 33,
+//         description: 'Ultra-soft, sustainably sourced cashmere in a relaxed fit',
+//         image: 'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80',
+//         category: 'Clothing',
+//         rating: 4.6,
+//         stock: 10,
+//     },
+//     {
+//         id: '5',
+//         name: 'Smart Home Security Camera',
+//         originalPrice: 179.99,
+//         discountPrice: 129.99,
+//         discountPercentage: 28,
+//         description: '4K resolution with night vision and two-way audio',
+//         image: 'https://images.unsplash.com/photo-1580745294621-2914fd8fee67?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80',
+//         category: 'Electronics',
+//         rating: 4.5,
+//         isNew: true,
+//         stock: 18,
+//     },
+//     {
+//         id: '6',
+//         name: 'Artisanal Ceramic Pour-Over Set',
+//         originalPrice: 89.99,
+//         discountPrice: 64.99,
+//         discountPercentage: 28,
+//         description: 'Hand-thrown ceramic pour-over coffee dripper with matching cup',
+//         image: 'https://images.unsplash.com/photo-1516543647435-f8c78a45081f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80',
+//         category: 'Home & Kitchen',
+//         rating: 4.7,
+//         stock: 12,
+//     },
+//     {
+//         id: '7',
+//         name: 'Designer Sunglasses',
+//         originalPrice: 159.99,
+//         discountPrice: 99.99,
+//         discountPercentage: 38,
+//         description: 'Polarized lenses with premium acetate frames',
+//         image: 'https://images.unsplash.com/photo-1572635196237-14b3f281503f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80',
+//         category: 'Accessories',
+//         rating: 4.8,
+//         stock: 9,
+//     },
+//     {
+//         id: '8',
+//         name: 'Luxury Scented Candle',
+//         originalPrice: 69.99,
+//         discountPrice: 49.99,
+//         discountPercentage: 29,
+//         description: 'Hand-poured soy wax with essential oils, 60-hour burn time',
+//         image: 'https://images.unsplash.com/photo-1602178141046-c9fe5b7eade4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80',
+//         category: 'Home & Decor',
+//         rating: 4.6,
+//         stock: 20,
+//     },
+// ];
 
 // Product Card Component with discount
 const ProductCard: React.FC<{
@@ -133,7 +133,7 @@ const ProductCard: React.FC<{
     const discount = product.original_price - product.price;
     const discountPercentage = Math.round((discount / product.original_price) * 100);
     return (
-        <div className="group relative flex h-full flex-col overflow-hidden rounded-xl bg-white shadow-md transition-all duration-300 hover:shadow-xl">
+        <div className="group relative flex h-full flex-col overflow-hidden rounded-xl  bg-black shadow-md transition-all duration-300 hover:shadow-xl">
             {/* Image container with aspect ratio */}
             <div className="relative w-full overflow-hidden bg-gray-50 pb-[100%]">
                 <img
@@ -154,10 +154,10 @@ const ProductCard: React.FC<{
                     <div className="flex translate-y-4 transform gap-2 transition-transform duration-300 group-hover:translate-y-0">
                         <Link
                             href={`/products/${product.slug}`}
-                            className="flex items-center gap-1 rounded-lg bg-white px-3 py-2 text-sm font-medium text-gray-800 shadow-md transition-colors duration-200 hover:bg-gray-100"
+                            className="flex items-center gap-1 rounded-lg bg-white px-3 py-2 text-sm font-medium text-black shadow-md transition-colors duration-200 hover:bg-gray-100"
                         >
                             <Eye size={16} />
-                            <span>Quick View</span>
+                            <span>View Product</span>
                         </Link>
                     </div>
                 </div>
@@ -166,21 +166,21 @@ const ProductCard: React.FC<{
             {/* Product details */}
             <div className="flex flex-grow flex-col p-4">
                 <div className="mb-1">
-                    <span className="text-xs font-medium tracking-wider text-gray-500 uppercase">{product.category.name}</span>
-                    <h3 className="mt-1 line-clamp-1 text-sm font-medium text-gray-900">{product.name}</h3>
+                    <span className="text-xs font-bold tracking-wider bg-white px-4 py-2 rounded-full text-black  ml-[-6px]">{product.category.name}</span>
+                    <h3 className="mt-3 line-clamp-1 text-sm font-bold text-white uppercase">{product.name}</h3>
                 </div>
 
                 {/* <div className="mt-1 mb-3">
                     <StarRating rating={product.rating} />
                 </div> */}
 
-                <p className="mb-3 line-clamp-2 text-xs text-gray-500">{product.description}</p>
+                <p className="mb-3 line-clamp-2 text-xs text-white">{product.description}</p>
 
                 <div className="mt-auto flex items-end justify-between border-t border-gray-100 pt-3">
                     <div className="flex flex-col">
-                        <span className="text-xs text-gray-500 line-through">${product.original_price}</span>
+                        <span className="text-xs text-white line-through">${product.original_price}</span>
                         <div className="flex items-baseline gap-1">
-                            <span className="text-lg font-bold text-gray-900">${discount}</span>
+                            <span className="text-lg font-bold text-white">${discount}</span>
                             {/* <span className="text-xs font-medium text-red-500">
                 Save $
                 {(product.originalPrice - product.discountPrice).toFixed(2)}
@@ -190,10 +190,10 @@ const ProductCard: React.FC<{
 
                     <button
                         onClick={() => onAddToCart(product.id)}
-                        className={`} flex items-center gap-1 rounded-lg bg-indigo-600 px-3 py-2 text-white shadow-sm transition-all duration-200 hover:bg-indigo-700`}
+                        className={`} flex items-center gap-1 rounded-lg bg-white px-3 py-2 text-black shadow-sm transition-all duration-200 hover:scale-105`}
                     >
                         <ShoppingCart size={16} />
-                        <span className="text-xs font-medium">Add to cart</span>
+                        <span className="text-xs font-medium ">Add to cart</span>
                     </button>
                 </div>
             </div>
@@ -254,20 +254,18 @@ const ProductListing = ({ products }: { products: ProductItem[] }) => {
     }, [currentIndex, goToNext, products.length, visibleProducts]);
 
     return (
-        <div className="mx-auto w-full max-w-7xl rounded-3xl bg-gradient-to-b from-gray-50 to-white px-4 py-8">
+        <div className="mx-auto w-full max-w-7xl rounded-3xl  px-4 py-8">
             <div className="mb-8 flex flex-col items-start justify-between gap-4 md:flex-row md:items-end">
                 <div>
-                    <div className="mb-2 inline-block rounded-full bg-red-100 px-3 py-1 text-xs font-semibold tracking-wide text-red-600">
-                        SPECIAL OFFERS
-                    </div>
-                    <h2 className="flex items-center gap-2 text-3xl font-bold text-gray-900">
-                        <Tag className="text-red-500" size={24} />
+                    <h2 className="flex items-center gap-2 text-3xl font-bold pl-3 text-gray-900 dark:text-white">
                         <span className="relative">
-                            Spring Sale Collection
-                            <span className="absolute right-0 -bottom-2 left-0 h-1 rounded-full bg-red-500"></span>
+                <div className='flex flex-col font-bold text-[40px] items-start justify-start text-start md:flex-col lg:flex-row'>
+                <h1 className='text-white'>The latest.</h1>
+                <h1 className='text-[#86868b]'> Take a look at what's new, right now.</h1>
+            </div>
                         </span>
                     </h2>
-                    <p className="mt-2 text-gray-500">Exclusive deals on premium products. Limited time only.</p>
+                    
                 </div>
 
                 <div className="flex space-x-3">
@@ -321,7 +319,7 @@ const ProductListing = ({ products }: { products: ProductItem[] }) => {
 
             {/* View all button */}
             <div className="mt-8 flex justify-center">
-                <button className="rounded-lg border-2 border-gray-900 px-6 py-2 font-medium text-gray-900 transition-colors duration-300 hover:bg-gray-900 hover:text-white">
+                <button className=" text-black rounded-lg border bg-white px-6 py-4 font-medium transition-colors duration-300 hover:bg-transparent hover:text-white hover:border-white">
                     View All Sales
                 </button>
             </div>

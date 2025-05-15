@@ -76,7 +76,7 @@ export default function StorePage() {
 
   return (
    
-    <div className="bg-white dark:bg-[#0F0F0F] min-h-screen transition-colors duration-300">
+    <div className=" min-h-screen transition-colors duration-300">
       {/* Toggle Button */}
      
 
