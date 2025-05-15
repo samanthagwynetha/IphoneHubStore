@@ -12,7 +12,7 @@ export default function home({ categories, products }: { categories: CategoryIte
             <div className="min-h-screen">
                 <div className="container mx-auto max-w-6xl ">
                     <ShopBanner />
-                     <div className="py-8 mt-50">
+                     <div className="py-8 mt-30">
                         <ProductListing products={products} />
                     </div>
                     

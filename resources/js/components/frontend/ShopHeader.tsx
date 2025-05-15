@@ -9,15 +9,55 @@ import { Input } from '@/components/ui/input';
 import { Sheet, SheetClose, SheetContent, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Link, usePage } from '@inertiajs/react';
 import { ModeToggle } from '../mode-togle';
-import { LuSearch } from "react-icons/lu";
+import { PageProps as InertiaPageProps } from '@inertiajs/core'
+import { router } from '@inertiajs/react';
+
+// type PageProps = {
+//     auth: { user: { id: number; name: string } | null }
+//   }
+
+
+type Product = {
+    id: number
+    name: string
+    slug: string
+    category_id: number
+    price: string
+    original_price: string
+    rating: string
+    review_count: number
+    description: string
+    features: (string | null)[]
+    colors: string[]
+    image: string
+    images: string[]
+    in_stock: boolean
+    is_featured: boolean
+    sizes: string[] | null
+    created_at: string
+    updated_at: string
+  }
+  
+  
+  type CartItem = {
+    id: number
+    quantity: number
+    product: Product
+  }
+  
+  interface PageProps extends InertiaPageProps {
+    // cartItems: CartItem[],
+    auth: { user: { id: number; name: string } | null }
+  }
+
 
 // Sample cart items for demonstration
 const initialCartItems = [
     {
         id: 1,
         name: 'Premium Noise-Cancelling Headphones',
-        price: 299.99,
         quantity: 1,
+        price: 299.99,
         image: '/placeholder.svg?height=80&width=80',
     },
     {
@@ -29,9 +69,11 @@ const initialCartItems = [
     },
 ];
 
-export default function ShopHeader() {
-    const [cartItems, setCartItems] = useState(initialCartItems);
+export default function ShopHeader({ children }: { children: React.ReactNode }) {
+    const { auth } = usePage<PageProps>().props;
+    const [cartItems, setCartItems] = useState<CartItem[]>([]);
     const [isScrolled, setIsScrolled] = useState(false);
+    const [loading, setLoading] = useState(true)
 
     // Track scroll position for styling changes
     useEffect(() => {
@@ -41,9 +83,39 @@ export default function ShopHeader() {
 
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
+
     }, []);
 
-    const updateQuantity = (id: number, increment: boolean) => {
+    
+    useEffect(() => {
+        getCartItems();
+      }, [])
+    
+      useEffect(() => {
+        console.log("Updated cartItems:", cartItems);
+      }, [cartItems]);
+      
+    const getCartItems = async() => {
+        await fetch('http://127.0.0.1:8000/getCart') 
+          .then((res) => {
+            if (!res.ok) throw new Error('Failed to fetch cart items')
+            return res.json()
+          })
+          .then((data) => {
+            console.log("cart items:")
+            console.log(data.cartItems[0])
+            setCartItems(data.cartItems) 
+            console.log("set cart items:")
+            console.log('cartItems');
+            console.log(cartItems);
+          })
+          .catch((err) => {
+            console.error(err)
+          })
+          .finally(() => setLoading(false))
+    }
+
+    const updateQuantityLocal = (id: number, increment: boolean) => {
         setCartItems(
             cartItems.map((item) => {
                 if (item.id === id) {
@@ -55,35 +127,69 @@ export default function ShopHeader() {
                 return item;
             }),
         );
+      
     };
 
-    const removeItem = (id: number) => {
-        setCartItems(cartItems.filter((item) => item.id !== id));
-    };
+
+      const updateQuantity = (itemId: number, type: 'increase' | 'decrease') => {
+        // Optional: Update local state optimistically
+        updateQuantityLocal(itemId, type === 'increase' ? true : false)
+        
+        // const quantity = 
+
+
+        router.patch(`http://127.0.0.1:8000/updateItem/${itemId}`, { type }, {
+          onSuccess: () => {
+            console.log('Quantity updated')
+            // getCartItems() // Refresh cart if needed
+          },
+          onError: (errors) => {
+            console.error('Update failed:', errors)
+          }
+        })
+      }
+
+
+    const deleteCartItem = (cartItemId: number) => {
+        router.delete(`http://127.0.0.1:8000/removeItem/${cartItemId}`, {
+          onSuccess: () => {
+            console.log('Item removed!');
+            getCartItems();
+          },
+          onError: (errors) => {
+            console.error('Error deleting item:', errors);
+          },
+        });
+      };
 
     const calculateTotal = () => {
-        return cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+        return cartItems.reduce((total, item) => total + parseFloat(item.product.price) * item.quantity, 0);
     };
-    const [showSearch, setShowSearch] = useState(false)
+   const navitems = [
+  { name: 'Store', href: '/store' },
+  { name: 'About', href: '/about' },
+];
 
-    const navitems = ['Store', 'About']
+const NavCont = () => {
+  const { url } = usePage();
 
-    const NavCont =({}) => {
-    const { url } =usePage();
-    return (
-        <ul className="flex flex-row items-center gap-6 text-[#86868b] text-sm">
-      {navitems.map((item) => (
-        <li key={item} className="flex flex-row hover:text-white duration-200">
-          <Link href={item === 'Store' ? '/store' : '/'} className={url === '/' ? '' : ''}>
-            {item}
+  return (
+    <ul className="flex flex-row items-center gap-6 text-[#86868b] text-sm">
+      {navitems.map(({ name, href }) => (
+        <li key={name} className="flex flex-row hover:text-white duration-200">
+          <Link href={href} className={url === href ? 'text-white' : ''}>
+            {name}
           </Link>
         </li>
       ))}
     </ul>
-    )
-}
+  );
+};
 
     return (
+        // <div>
+        //     <h2>sadas</h2>
+        // </div>
         <header className={`sticky top-0 z-50 w-full border-b transition-all duration-300 ${isScrolled ? 'shadow-md' : ''}`}>
             <div className="container mx-auto">
                 <div className="flex h-20 items-center justify-between px-4 md:px-6">
@@ -99,40 +205,45 @@ export default function ShopHeader() {
                         </Link>
                     </div>
 
-                <div className="absolute left-1/2 transform -translate-x-1/2 hidden md:flex">
-                    <NavCont />
-                </div>
-
-
+                    {/* Search bar - directly in the navbar */}
+                    <div className="mx-8 hidden max-w-xl flex-1 md:flex">
+                        <div className="relative flex w-full items-center">
+                            <Input
+                                type="search"
+                                placeholder="Search products, brands and categories"
+                                className="h-10 w-full rounded-r-none border-r-0"
+                            />
+                            <Button type="submit" className="h-10 rounded-l-none bg-[#000000] hover:bg-[#000000] dark:bg-white ">
+                                Search
+                            </Button>
+                        </div>
+                    </div>
 
                     {/* Actions */}
                     <div className="flex items-center gap-1 md:gap-6">
-                        <div className="relative flex  items-center gap-2">
-                            <Input
-                            type="search"
-                            placeholder="Search products, brands and categories"
-                            className={`h-10  rounded-full border transition-all duration-300 ${
-                                showSearch ? 'opacity-100 visible' : 'opacity-0 invisible'
-                            }`}
-                            />
-                            <LuSearch
-                            className="w-5 h-5 cursor-pointer hover:scale-110 duration-200"
-                            onClick={() => setShowSearch((prev) => !prev)}
-                            />
-                        </div>
                         <ModeToggle />
+                        {auth.user ? (
                         <Link
+                            method="post"
+                            href={route('logout')}
+                            className="inline-block rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
+                        >
+                            Logout
+                        </Link>)
+                        :
+                        (<Link
                             href={route('login')}
                             className="inline-block rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
                         >
                             Login
-                        </Link>
+                        </Link>)
+                        }
                         {/* Shopping Cart */}
                         <Sheet>
                             <SheetTrigger asChild>
                                 <Button variant="ghost" size="icon" className="relative rounded-full">
                                     <ShoppingBag className="h-5 w-5" />
-                                    {cartItems.length > 0 && (
+                                    {auth.user && cartItems.length > 0 && (
                                         <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-black dark:bg-white text-xs font-medium text-white dark:text-black">
                                             {cartItems.reduce((total, item) => total + item.quantity, 0)}
                                         </span>
@@ -162,8 +273,8 @@ export default function ShopHeader() {
                                                 <div key={item.id} className="grid grid-cols-[80px_1fr] gap-4">
                                                     <div className="aspect-square overflow-hidden rounded-md bg-slate-50">
                                                         <img
-                                                            src={item.image || '/placeholder.svg'}
-                                                            alt={item.name}
+                                                            src={`http://127.0.0.1:8000/storage/${item.product.images[0]}` || '/placeholder.svg'}
+                                                            alt={item.product.name}
                                                             width={80}
                                                             height={80}
                                                             className="h-full w-full object-cover"
@@ -171,25 +282,25 @@ export default function ShopHeader() {
                                                     </div>
                                                     <div className="grid gap-1">
                                                         <div className="flex items-start justify-between">
-                                                            <h3 className="leading-tight font-medium">{item.name}</h3>
+                                                            <h3 className="leading-tight font-medium">{item.product.name}</h3>
                                                             <Button
                                                                 variant="ghost"
                                                                 size="icon"
                                                                 className="h-8 w-8 rounded-full"
-                                                                onClick={() => removeItem(item.id)}
+                                                                onClick={() => deleteCartItem(item.id)}
                                                             >
                                                                 <X className="h-4 w-4" />
                                                                 <span className="sr-only">Remove</span>
                                                             </Button>
                                                         </div>
-                                                        <p className="text-sm text-slate-500">${item.price.toFixed(2)}</p>
+                                                        <p className="text-sm text-slate-500">${parseFloat(item.product.price).toFixed(2)}</p>
                                                         <div className="mt-2 flex items-center gap-3">
                                                             <div className="flex items-center rounded-full border">
                                                                 <Button
                                                                     variant="ghost"
                                                                     size="icon"
                                                                     className="h-8 w-8 rounded-full"
-                                                                    onClick={() => updateQuantity(item.id, false)}
+                                                                    onClick={() => updateQuantity(item.id, 'decrease')}
                                                                 >
                                                                     <Minus className="h-3 w-3" />
                                                                     <span className="sr-only">Decrease quantity</span>
@@ -199,13 +310,13 @@ export default function ShopHeader() {
                                                                     variant="ghost"
                                                                     size="icon"
                                                                     className="h-8 w-8 rounded-full"
-                                                                    onClick={() => updateQuantity(item.id, true)}
+                                                                    onClick={() => updateQuantity(item.id, 'increase')}
                                                                 >
                                                                     <Plus className="h-3 w-3" />
                                                                     <span className="sr-only">Increase quantity</span>
                                                                 </Button>
                                                             </div>
-                                                            <div className="ml-auto font-medium">${(item.price * item.quantity).toFixed(2)}</div>
+                                                            <div className="ml-auto font-medium">${(parseFloat(item.product.price) * item.quantity).toFixed(2)}</div>
                                                         </div>
                                                     </div>
                                                 </div>

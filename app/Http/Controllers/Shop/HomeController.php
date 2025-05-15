@@ -35,4 +35,11 @@ class HomeController extends Controller
            'similarProducts'=>$similarProducts
         ]);
     }
+    
+    public function getproducts() {
+        return response()->json([
+            Product::all()
+        ]);
+    }
+
 }
