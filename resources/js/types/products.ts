@@ -20,7 +20,6 @@ export interface CreateProductItem {
     images: File[] | null;
     colors: string | string[];
     is_featured: boolean;
-    stock: number;
 }
 export interface ProductItem {
     id: number;
@@ -36,5 +35,4 @@ export interface ProductItem {
     colors: string;
     is_featured: boolean;
     in_stock: boolean;
-    stock: number;
 }

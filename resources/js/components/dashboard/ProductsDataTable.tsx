@@ -35,7 +35,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { CategoryItem } from '@/types/categories';
 import { CreateProductItem } from '@/types/products';
-import { router, useForm } from '@inertiajs/react';
+import { Link, router, useForm } from '@inertiajs/react';
 import { toast } from 'sonner';
 import * as XLSX from 'xlsx';
 import { CompactFileInput } from '../FormInputs/ImageUploadInput';
@@ -44,20 +44,14 @@ import { Checkbox } from '../ui/checkbox';
 import { Textarea } from '../ui/textarea';
 
 export type Product = {
-    id: string | number;
+    id: string;
     name: string;
     category: CategoryItem;
     salesCount: number;
     image: string;
     stock: number;
     price: number;
-    status: number;
-    slug?: string;
-    colors?: string;
-    description?: string;
-    is_featured?: boolean;
-    original_price?: number;
-    features?: string;
+    status: 'in-stock' | 'out-stock';
 };
 
 export default function ProductsDataTable({
@@ -70,35 +64,7 @@ export default function ProductsDataTable({
         value: number;
     }[];
 }) {
-    const [sorting, setSorting] = React.useState<SortingState>([]);
-    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
-    const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
-    const [rowSelection, setRowSelection] = React.useState({});
-    const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
-    const [showAddDialog, setShowAddDialog] = React.useState(false);
-    const [showEditDialog, setShowEditDialog] = React.useState(false);
-    const [productToEdit, setProductToEdit] = React.useState<Product | null>(null);
-    const [productToDelete, setProductToDelete] = React.useState<string | number | null>(null);
-    const [rowsPerPage, setRowsPerPage] = React.useState(5);
-    const [images, setImages] = React.useState<File[]>([]);
-
-    // Add/Edit form state
-    const { data, setData, processing, errors, reset } = useForm<Required<CreateProductItem>>({
-        name: '',
-        slug: '',
-        colors: '',
-        image: null,
-        description: '',
-        is_featured: false,
-        price: 0,
-        original_price: 0,
-        features: '',
-        images: null,
-        category_id: '1',
-        stock: 0,
-    });
-
-<!--     // --- Edit dialog state
+    // --- Edit dialog state
     const [showEditDialog, setShowEditDialog] = React.useState(false);
     const [productToEdit, setProductToEdit] = React.useState<Product | null>(null);
     const [editImages, setEditImages] = React.useState<File[]>([]);
@@ -113,7 +79,7 @@ export default function ProductsDataTable({
         category_id: '',
         image: null,
         images: null,
-    }); -->
+    });
 
     // --- Table columns
     const columns: ColumnDef<Product>[] = [
@@ -123,7 +89,7 @@ export default function ProductsDataTable({
             cell: ({ row }) => (
                 <div className="flex items-center justify-center">
                     <img
-                        src={row.original.image.startsWith('products/') ? `/storage/${row.original.image}` : row.original.image}
+                        src={`/storage/${row.original.image}`}
                         alt={row.getValue('name')}
                         width={40}
                         height={40}
@@ -165,7 +131,7 @@ export default function ProductsDataTable({
             accessorKey: 'category',
             header: 'Category',
             cell: ({ row }) => {
-                const name = row.original.category?.name || '';
+                const name = row.original.category.name;
                 return (
                     <Button variant="outline" size="sm">
                         {name}
@@ -173,39 +139,11 @@ export default function ProductsDataTable({
                 );
             },
         },
-
         {
             id: 'actions',
             header: 'Actions',
             enableHiding: false,
-            cell: ({ row }) => {
-                const product = row.original;
-                return (
-                    <div className="flex items-center gap-2">
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8"
-                            onClick={() => handleEditClick(product)}
-                        >
-                            <Pencil className="h-4 w-4" />
-                            <span className="sr-only">Edit</span>
-                        </Button>
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            className="text-destructive h-8 w-8"
-                            onClick={() => handleDeleteClick(product.id)}
-                        >
-                            <Trash className="h-4 w-4" />
-                            <span className="sr-only">Delete</span>
-                        </Button>
-                    </div>
-                );
-            },
-        },
-    ];
-<!--             cell: ({ row }) => (
+            cell: ({ row }) => (
                 <div className="flex items-center gap-2">
                     <Button
                         variant="ghost"
@@ -238,16 +176,16 @@ export default function ProductsDataTable({
                 </div>
             ),
         },
-    ]; -->
+    ];
 
     // --- Table logic
-<!--     const [sorting, setSorting] = React.useState<SortingState>([]);
+    const [sorting, setSorting] = React.useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
     const [rowSelection, setRowSelection] = React.useState({});
     const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
     const [showAddDialog, setShowAddDialog] = React.useState(false);
-    const [rowsPerPage, setRowsPerPage] = React.useState(5); -->
+    const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
     const table = useReactTable({
         data: products,
@@ -277,131 +215,36 @@ export default function ProductsDataTable({
         table.setPageSize(rowsPerPage);
     }, [rowsPerPage, table]);
 
-
-const handleEditClick = (product: Product) => {
-    setProductToEdit(product);
-    setData({
-        name: product.name || '',
-        slug: product.slug || '',
-        colors: Array.isArray(product.colors) ? product.colors.join(',') : (product.colors || ''),
-        image: null,
-        description: product.description || '',
-        is_featured: !!product.is_featured,
-        price: product.price,
-        original_price: product.original_price ?? 0,
-        features: Array.isArray(product.features) ? product.features.join(',') : (product.features || ''),
-        images: null,
-        category_id: product.category?.id?.toString() || '1',
-        stock: product.stock ?? 0,
-    });
-    setImages([]);
-    setShowEditDialog(true);
-};
-    // Edit submit
-    const handleEditSubmit: React.FormEventHandler = (e) => {
-        e.preventDefault();
-        if (productToEdit) {
-            const formData = new FormData();
-            formData.append('name', data.name);
-            formData.append('slug', data.slug || '');
-            formData.append('colors', typeof data.colors === 'string' ? data.colors : data.colors.join(','));
-            formData.append('description', data.description || '');
-            formData.append('is_featured', data.is_featured ? '1' : '0');
-            formData.append('price', data.price.toString());
-            formData.append('original_price', data.original_price.toString());
-            formData.append('features', typeof data.features === 'string' ? data.features : data.features.join(','));
-            formData.append('category_id', data.category_id.toString());
-            formData.append('stock', data.stock.toString());
-            formData.append('_method', 'PUT');
-            if (images.length > 0) {
-                formData.append('image', images[0]);
-            }
-            router.post(`/dashboard/products/${productToEdit.id}`, formData, {
-                onSuccess: () => {
-                    toast.success('Product updated successfully');
-                    setShowEditDialog(false);
-                    setProductToEdit(null);
-                    setImages([]);
-                    reset();
-                },
-                onError: (errors) => {
-                    const firstError = errors && typeof errors === 'object' ? Object.values(errors)[0] : null;
-                    toast.error(Array.isArray(firstError) ? firstError[0] : firstError || 'Failed to update product');
-                }
-            });
-        }
-    };
-
-    // Delete
-    const handleDeleteClick = (id: string | number) => {
-        setProductToDelete(id);
-        setShowDeleteDialog(true);
-    };
-
-    const handleDeleteConfirm = () => {
-        if (productToDelete) {
-            router.delete(`/dashboard/products/${productToDelete}`, {
-                onSuccess: () => {
-                    toast.success('Product deleted successfully');
-                    setShowDeleteDialog(false);
-                    setProductToDelete(null);
-                },
-                onError: () => {
-                    toast.error('Failed to delete product');
-                }
-            });
-        }
-    };
-
-    // Add
-    const handleAddSubmit: React.FormEventHandler = (e) => {
-        e.preventDefault();
-        if (images.length > 0) {
-            data.image = images[0];
-        }
     // --- Add product form
-//     const [images, setImages] = React.useState<File[]>([]);
-//     const { data, setData, processing, errors, reset } = useForm<Required<CreateProductItem>>({
-//         name: '',
-//         slug: '',
-//         colors: '',
-//         image: null,
-//         description: '',
-//         is_featured: true,
-//         price: 0,
-//         original_price: 0,
-//         features: '',
-//         images: null,
-//         category_id: '1',
-//     });
+    const [images, setImages] = React.useState<File[]>([]);
+    const { data, setData, processing, errors, reset } = useForm<Required<CreateProductItem>>({
+        name: '',
+        slug: '',
+        colors: '',
+        image: null,
+        description: '',
+        is_featured: true,
+        price: 0,
+        original_price: 0,
+        features: '',
+        images: null,
+        category_id: '1',
+    });
 
     const submit: React.FormEventHandler = (e) => {
         e.preventDefault();
         data.image = images[0];
-//         data.images = images;
+        data.images = images;
         data.colors = typeof data.colors === 'string' ? data.colors.split(',') : data.colors;
         data.features = typeof data.features === 'string' ? data.features.split(',') : data.features;
         data.category_id = Number(data.category_id);
         router.post('/dashboard/products', data, {
-            onSuccess: () => {
-                reset();
-                setImages([]);
-                setShowAddDialog(false);
-                toast.success('Product created successfully');
-            },
-            onError: () => {
-                toast.error('Failed to create product');
-            }
-        });
-    };
-
-    // Export
-<!--             onFinish: () => {
+            onFinish: () => {
                 reset();
                 toast.success('Product Successfully');
             },
         });
-    }; -->
+    };
 
     // --- Edit product form
     const submitEdit: React.FormEventHandler = (e) => {
@@ -430,7 +273,7 @@ const handleEditClick = (product: Product) => {
             return {
                 ID: rowData.id,
                 Name: rowData.name,
-                Category: rowData.category?.name,
+                Category: rowData.category,
                 Status: rowData.status,
                 Stock: rowData.stock,
                 'Sales Count': rowData.salesCount,
@@ -443,7 +286,7 @@ const handleEditClick = (product: Product) => {
         XLSX.writeFile(workbook, 'products.xlsx');
     };
 
-    // Table value
+    // --- Total value
     const totalValue = products.reduce((sum, product) => sum + product.price * product.stock, 0);
     const formattedTotalValue = new Intl.NumberFormat('en-US', {
         style: 'currency',
@@ -451,15 +294,10 @@ const handleEditClick = (product: Product) => {
     }).format(totalValue);
 
     // --- Edit Dialog JSX
-<!--     const editDialog = (
+    const editDialog = (
         <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
             <DialogContent className="sm:max-w-[750px]">
-                <form onSubmit={
-                
-                
-                
-                
-                }>
+                <form onSubmit={submitEdit}>
                     <DialogHeader>
                         <DialogTitle>Edit Product</DialogTitle>
                         <DialogDescription>Update the product details below.</DialogDescription>
@@ -553,7 +391,7 @@ const handleEditClick = (product: Product) => {
                 </form>
             </DialogContent>
         </Dialog>
-    ); -->
+    );
 
     return (
         <Card className="w-full">
@@ -567,7 +405,7 @@ const handleEditClick = (product: Product) => {
                         </p>
                     </div>
                     <div className="flex items-center gap-2">
-                        <Button variant="outline" size="icon" onClick={() => window.location.reload()}>
+                        <Button variant="outline" size="icon">
                             <RefreshCw className="h-4 w-4" />
                         </Button>
                         <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
@@ -578,7 +416,7 @@ const handleEditClick = (product: Product) => {
                                 </Button>
                             </DialogTrigger>
                             <DialogContent className="sm:max-w-[750px]">
-                                <form onSubmit={handleAddSubmit}>
+                                <form action="" onSubmit={submit}>
                                     <DialogHeader>
                                         <DialogTitle>Add New Product</DialogTitle>
                                         <DialogDescription>Fill in the details to add a new product to your inventory.</DialogDescription>
@@ -591,8 +429,8 @@ const handleEditClick = (product: Product) => {
                                                 <InputError message={errors.name} className="mt-2" />
                                             </div>
                                             <div className="space-y-2">
-                                                <Label htmlFor="colors">Product Colors eg Navy Blue=#15317E</Label>
-                                                <Input id="colors" value={data.colors} onChange={(e) => setData('colors', e.target.value)} />
+                                                <Label htmlFor="category">Product Colors eg Navy Blue=#15317E</Label>
+                                                <Input id="category" value={data.colors} onChange={(e) => setData('colors', e.target.value)} />
                                                 <InputError message={errors.colors} className="mt-2" />
                                             </div>
                                         </div>
@@ -603,25 +441,28 @@ const handleEditClick = (product: Product) => {
                                                 <InputError message={errors.price} className="mt-2" />
                                             </div>
                                             <div className="space-y-2">
-                                                <Label htmlFor="original_price">Original Price</Label>
+                                                <Label htmlFor="category">Original Price</Label>
                                                 <Input
                                                     id="original_price"
                                                     value={data.original_price}
                                                     onChange={(e) => setData('original_price', Number(e.target.value))}
                                                 />
                                             </div>
+
                                             <div className="space-y-2">
-                                                <Label htmlFor="category_id">Select Category</Label>
-                                                <Select onValueChange={(value) => setData('category_id', value)} defaultValue={data.category_id?.toString()}>
+                                                <Label htmlFor="category">Select Category</Label>
+                                                <Select onValueChange={(value) => setData('category_id', value)} defaultValue={'1'}>
                                                     <SelectTrigger className="w-[180px]">
                                                         <SelectValue placeholder="Category" />
                                                     </SelectTrigger>
                                                     <SelectContent>
-                                                        {categories.map((item) => (
-                                                            <SelectItem key={item.value} value={item.value.toString()}>
-                                                                {item.label}
-                                                            </SelectItem>
-                                                        ))}
+                                                        {categories.map((item) => {
+                                                            return (
+                                                                <SelectItem key={item.value} value={item.value.toString()}>
+                                                                    {item.label}
+                                                                </SelectItem>
+                                                            );
+                                                        })}
                                                     </SelectContent>
                                                 </Select>
                                             </div>
@@ -632,6 +473,7 @@ const handleEditClick = (product: Product) => {
                                                 <Input id="features" value={data.features} onChange={(e) => setData('features', e.target.value)} />
                                                 <InputError message={errors.features} className="mt-2" />
                                             </div>
+
                                             <div className="items-top flex space-x-2">
                                                 <Checkbox
                                       
@@ -641,7 +483,7 @@ const handleEditClick = (product: Product) => {
                                                 />
                                                 <div className="grid gap-1.5 leading-none">
                                                     <label
-                                                        htmlFor="isFeatured"
+                                                        htmlFor="terms1"
                                                         className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                                                     >
                                                         Is Featured
@@ -649,29 +491,18 @@ const handleEditClick = (product: Product) => {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="space-y-2">
-                                            <Label htmlFor="stock">Stock</Label>
-                                            <Input
-                                                id="stock"
-                                                type="number"
-                                                value={data.stock}
-                                                onChange={(e) => setData('stock', Number(e.target.value))}
-                                                min={0}
-                                            />
-                                            <InputError message={errors.stock} className="mt-2" />
-                                        </div>
                                         <div className="grid gap-4 md:grid-cols-2">
                                             <div className="grid w-full gap-1.5">
-                                                <Label htmlFor="description">Product Description</Label>
+                                                <Label htmlFor="message">Product Description</Label>
                                                 <Textarea
                                                     value={data.description}
                                                     onChange={(e) => setData('description', e.target.value)}
                                                     placeholder="Type your description here."
-                                                    id="description"
+                                                    id="message"
                                                 />
                                                 <InputError message={errors.description} className="mt-2" />
                                             </div>
-                                            <div>
+                                            <div className="">
                                                 <h2 className="mb-3 text-lg font-semibold">Upload product Images</h2>
                                                 <div className="rounded border p-4">
                                                     <CompactFileInput multiple={true} maxSizeMB={1} onChange={setImages} />
@@ -690,146 +521,10 @@ const handleEditClick = (product: Product) => {
                                 </form>
                             </DialogContent>
                         </Dialog>
-                        {/* Edit Dialog */}
-                        <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
-                            <DialogContent className="sm:max-w-[750px]">
-                                <form onSubmit={handleEditSubmit}>
-                                    <DialogHeader>
-                                        <DialogTitle>Edit Product</DialogTitle>
-                                        <DialogDescription>Update the details of this product.</DialogDescription>
-                                    </DialogHeader>
-                                    <div className="grid gap-6 py-4">
-                                        <div className="grid gap-6 md:grid-cols-2">
-                                            <div className="space-y-2">
-                                                <Label htmlFor="edit-name">Product Name</Label>
-                                                <Input id="edit-name" value={data.name} onChange={(e) => setData('name', e.target.value)} />
-                                                <InputError message={errors.name} className="mt-2" />
-                                            </div>
-                                            <div className="space-y-2">
-                                                <Label htmlFor="edit-colors">Product Colors eg Navy Blue=#15317E</Label>
-                                                <Input id="edit-colors" value={data.colors} onChange={(e) => setData('colors', e.target.value)} />
-                                                <InputError message={errors.colors} className="mt-2" />
-                                            </div>
-                                        </div>
-                                        <div className="grid gap-6 md:grid-cols-3">
-                                            <div className="space-y-2">
-                                                <Label htmlFor="edit-price">Price</Label>
-                                                <Input id="edit-price" value={data.price} onChange={(e) => setData('price', Number(e.target.value))} />
-                                                <InputError message={errors.price} className="mt-2" />
-                                            </div>
-                                            <div className="space-y-2">
-                                                <Label htmlFor="edit-original_price">Original Price</Label>
-                                                <Input
-                                                    id="edit-original_price"
-                                                    value={data.original_price}
-                                                    onChange={(e) => setData('original_price', Number(e.target.value))}
-                                                />
-                                            </div>
-                                            <div className="space-y-2">
-                                                <Label htmlFor="edit-category_id">Select Category</Label>
-                                               <Select
-                                                    value={data.category_id?.toString()}
-                                                    onValueChange={(value) => setData('category_id', value)}
-                                                >
-                                                     
-                                                    <SelectTrigger className="w-[180px]">
-                                                        <SelectValue placeholder="Category" />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        {categories.map((item) => (
-                                                            <SelectItem key={item.value} value={item.value.toString()}>
-                                                                {item.label}
-                                                            </SelectItem>
-                                                        ))}
-                                                    </SelectContent>
-                                                </Select>
-                                            </div>
-                                        </div>
-                                        <div className="grid gap-4 md:grid-cols-2">
-                                            <div className="space-y-2">
-                                                <Label htmlFor="edit-features">Product Features (comma separated) </Label>
-                                                <Input id="edit-features" value={data.features} onChange={(e) => setData('features', e.target.value)} />
-                                                <InputError message={errors.features} className="mt-2" />
-                                            </div>
-                                            <div className="items-top flex space-x-2">
-                                                <Checkbox
-                                                    checked={data.is_featured}
-                                                    onCheckedChange={(value) => setData('is_featured', !!value)}
-                                                    id="edit-isFeatured"
-                                                />
-                                                <div className="grid gap-1.5 leading-none">
-                                                    <label
-                                                        htmlFor="edit-isFeatured"
-                                                        className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                                    >
-                                                        Is Featured
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label htmlFor="stock">Stock</Label>
-                                            <Input
-                                                id="stock"
-                                                type="number"
-                                                value={data.stock}
-                                                onChange={(e) => setData('stock', Number(e.target.value))}
-                                                min={0}
-                                            />
-                                            <InputError message={errors.stock} className="mt-2" />
-                                        </div>
-                                                                                <div className="grid gap-4 md:grid-cols-2">
-                                            <div className="grid w-full gap-1.5">
-                                                <Label htmlFor="edit-description">Product Description</Label>
-                                                <Textarea
-                                                    value={data.description}
-                                                    onChange={(e) => setData('description', e.target.value)}
-                                                    placeholder="Type your description here."
-                                                    id="edit-description"
-                                                />
-                                                <InputError message={errors.description} className="mt-2" />
-                                            </div>
-                                            <div>
-                                                <h2 className="mb-3 text-lg font-semibold">Update product Images</h2>
-                                                <div className="rounded border p-4">
-                                                    <CompactFileInput multiple={true} maxSizeMB={1} onChange={setImages} />
-                                                    {productToEdit?.image && (
-                                                        <div className="mt-2">
-                                                            <p className="text-sm text-muted-foreground">Current image:</p>
-                                                            <img
-                                                                src={productToEdit.image.startsWith('products/') ? `/storage/${productToEdit.image}` : productToEdit.image}
-                                                                alt={productToEdit.name}
-                                                                className="mt-2 h-16 w-16 rounded-md object-cover"
-                                                            />
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <DialogFooter>
-                                        <Button
-                                            variant="outline"
-                                            onClick={() => {
-                                                setShowEditDialog(false);
-                                                setProductToEdit(null);
-                                                reset();
-                                            }}
-                                        >
-                                            Cancel
-                                        </Button>
-                                        <Button disabled={processing} type="submit">
-                                            {processing ? 'Saving...' : 'Save Changes'}
-                                        </Button>
-                                    </DialogFooter>
-                                </form>
-                            </DialogContent>
-                        </Dialog>
                     </div>
                 </div>
             </CardHeader>
             <CardContent>
-                {/* ...table and pagination as before... */}
                 <div className="flex flex-col gap-4 py-4 sm:flex-row sm:items-center">
                     <div className="relative flex-1">
                         <Search className="text-muted-foreground absolute top-2.5 left-2.5 h-4 w-4" />
@@ -932,20 +627,19 @@ const handleEditClick = (product: Product) => {
                     </Button>
                 </div>
             </CardFooter>
-            {/* Delete Dialog */}
+
             <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                         <AlertDialogDescription>
-                            This will permanently delete the product.
+                            This action will delete {table.getFilteredSelectedRowModel().rows.length} selected product(s). This action cannot be
+                            undone.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                        <AlertDialogCancel onClick={() => setProductToDelete(null)}>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDeleteConfirm} className="bg-destructive text-destructive-foreground">
-<!--                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => {}} className="bg-destructive text-destructive-foreground"> -->
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={() => {}} className="bg-destructive text-destructive-foreground">
                             Delete
                         </AlertDialogAction>
                     </AlertDialogFooter>

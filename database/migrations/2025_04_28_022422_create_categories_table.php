@@ -17,7 +17,6 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->string('color')->default('bg-amber-50');
             $table->string('image')->nullable();
-            $table->integer('stock')->default(0);
             $table->text('description')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
@@ -27,7 +26,6 @@ return new class extends Migration
     /**
      * Reverse the migrations.
      */
-
     public function down(): void
     {
         Schema::dropIfExists('categories');
