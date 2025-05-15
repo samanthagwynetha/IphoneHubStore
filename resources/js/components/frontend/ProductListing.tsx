@@ -3,6 +3,9 @@ import { ProductItem } from '@/types/products';
 import { Link } from '@inertiajs/react';
 import { ChevronLeft, ChevronRight, Eye, ShoppingCart, Tag } from 'lucide-react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { router } from '@inertiajs/react';
+import { toast } from 'sonner';
+
 
 // Product type definition with discount properties
 type Product = {
@@ -21,117 +24,41 @@ type Product = {
     stock: number;
 };
 
-// Sample product data with Unsplash images
-// const sampleProducts: Product[] = [
-//     {
-//         id: '1',
-//         name: 'Italian Leather Crossbody Bag',
-//         originalPrice: 249.99,
-//         discountPrice: 189.99,
-//         discountPercentage: 24,
-//         description: 'Handcrafted in Florence with premium full-grain leather',
-//         image: 'https://images.unsplash.com/photo-1594223274512-ad4803739b7c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80',
-//         category: 'Accessories',
-//         rating: 4.9,
-//         isNew: true,
-//         stock: 15,
-//     },
-//     {
-//         id: '2',
-//         name: 'Automatic Chronograph Watch',
-//         originalPrice: 599.99,
-//         discountPrice: 449.99,
-//         discountPercentage: 25,
-//         description: 'Swiss-made movement with sapphire crystal and exhibition caseback',
-//         image: 'https://images.unsplash.com/photo-1614164185128-e4ec99c436d7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80',
-//         category: 'Watches',
-//         rating: 4.8,
-//         stock: 8,
-//     },
-//     {
-//         id: '3',
-//         name: 'Premium Wireless Earbuds',
-//         originalPrice: 199.99,
-//         discountPrice: 149.99,
-//         discountPercentage: 25,
-//         description: 'Active noise cancellation with 30-hour battery life',
-//         image: 'https://images.unsplash.com/photo-1590658268037-6bf12165a8df?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80',
-//         category: 'Electronics',
-//         rating: 4.7,
-//         stock: 22,
-//     },
-//     {
-//         id: '4',
-//         name: 'Pure Cashmere Sweater',
-//         originalPrice: 299.99,
-//         discountPrice: 199.99,
-//         discountPercentage: 33,
-//         description: 'Ultra-soft, sustainably sourced cashmere in a relaxed fit',
-//         image: 'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80',
-//         category: 'Clothing',
-//         rating: 4.6,
-//         stock: 10,
-//     },
-//     {
-//         id: '5',
-//         name: 'Smart Home Security Camera',
-//         originalPrice: 179.99,
-//         discountPrice: 129.99,
-//         discountPercentage: 28,
-//         description: '4K resolution with night vision and two-way audio',
-//         image: 'https://images.unsplash.com/photo-1580745294621-2914fd8fee67?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80',
-//         category: 'Electronics',
-//         rating: 4.5,
-//         isNew: true,
-//         stock: 18,
-//     },
-//     {
-//         id: '6',
-//         name: 'Artisanal Ceramic Pour-Over Set',
-//         originalPrice: 89.99,
-//         discountPrice: 64.99,
-//         discountPercentage: 28,
-//         description: 'Hand-thrown ceramic pour-over coffee dripper with matching cup',
-//         image: 'https://images.unsplash.com/photo-1516543647435-f8c78a45081f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80',
-//         category: 'Home & Kitchen',
-//         rating: 4.7,
-//         stock: 12,
-//     },
-//     {
-//         id: '7',
-//         name: 'Designer Sunglasses',
-//         originalPrice: 159.99,
-//         discountPrice: 99.99,
-//         discountPercentage: 38,
-//         description: 'Polarized lenses with premium acetate frames',
-//         image: 'https://images.unsplash.com/photo-1572635196237-14b3f281503f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80',
-//         category: 'Accessories',
-//         rating: 4.8,
-//         stock: 9,
-//     },
-//     {
-//         id: '8',
-//         name: 'Luxury Scented Candle',
-//         originalPrice: 69.99,
-//         discountPrice: 49.99,
-//         discountPercentage: 29,
-//         description: 'Hand-poured soy wax with essential oils, 60-hour burn time',
-//         image: 'https://images.unsplash.com/photo-1602178141046-c9fe5b7eade4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80',
-//         category: 'Home & Decor',
-//         rating: 4.6,
-//         stock: 20,
-//     },
-// ];
-
 // Product Card Component with discount
 const ProductCard: React.FC<{
     product: ProductItem;
+    // onAddToCart: (id: number) => void;
+}> = ({ product }) => {
 
-    onAddToCart: (id: number) => void;
-}> = ({ product, onAddToCart }) => {
+    const addToCart: React.MouseEventHandler = (e) => {
+        console.log('addtocart')
+        e.preventDefault();
+    
+        const data = {
+            product_id: product.id,
+            quantity: 1,
+        };
+    
+        router.post('/products/addCart', data, {
+            preserveScroll: true,
+            onSuccess: () => {
+                toast.success('Added to cart!');
+            },
+            onError: (errors) => {
+                console.error(errors);
+                toast.error('Failed to add to cart.');
+            },
+        });
+    };
+
     const imagePath = `/storage/${product.images[0]}`;
     const discount = product.original_price - product.price;
     const discountPercentage = Math.round((discount / product.original_price) * 100);
+
+    function onAddToCart(id: number): void {
+        console.log(id);
+    }
+
     return (
         <div className="group relative flex h-full flex-col overflow-hidden rounded-xl  bg-black shadow-md transition-all duration-300 hover:shadow-xl">
             {/* Image container with aspect ratio */}
@@ -189,7 +116,7 @@ const ProductCard: React.FC<{
                     </div>
 
                     <button
-                        onClick={() => onAddToCart(product.id)}
+                        onClick={addToCart}
                         className={`} flex items-center gap-1 rounded-lg bg-white px-3 py-2 text-black shadow-sm transition-all duration-200 hover:scale-105`}
                     >
                         <ShoppingCart size={16} />
