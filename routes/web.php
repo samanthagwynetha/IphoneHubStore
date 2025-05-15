@@ -28,9 +28,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     //     return Inertia::render('dashboard/index');
     // })->name('dashboard');
 
-    // Route::get('/store', function () {
-    //     return Inertia::render('resources/js/components/frontend/StorePage.tsx');
-    // })->name('store.index');
+    Route::get('/store', function () {
+        return Inertia::render('resources/js/components/frontend/StorePage.tsx');
+    })->name('store.index');
 
     // Route::get('/dashboard/products',[ProductController::class,'list_products'] )->name('dashboard.products.index');
     // Route::post('/dashboard/products',[ProductController::class,'save_product'] )->name('dashboard.products.save');
@@ -42,12 +42,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 
 Route::middleware(['auth', 'role:user'])->group(function () {
-    Route::get('/store', function () {
-        return Inertia::render('resources/js/components/frontend/StorePage.tsx');
-    })->name('store.index');
-
-    Route::post('/addCart', [CartController::class, 'add'])->name('add.item');
-
+    Route::post('products/addCart', [CartController::class, 'add'])->name('add.cart');
+    Route::get('/getCart', [CartController::class, 'getCartItems'])->name('get.cart');
+    Route::patch('/updateItem/{id}', [CartController::class, 'update'])->name('get.cart');
+    Route::delete('/removeItem/{id}', [CartController::class, 'destroy'])->name('remove.cart');
 });
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
@@ -64,7 +62,6 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     
 });
 
-Route::get('/users',[AuthenticatedSessionController::class,'getusers'] )->name('Users');
 Route::get('/users',[AuthenticatedSessionController::class,'getusers'] )->name('Users');
 
 

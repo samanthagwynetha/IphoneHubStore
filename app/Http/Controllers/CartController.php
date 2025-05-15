@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\CartItem;
 use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
+
 
 class CartController extends Controller
 {
@@ -19,6 +21,10 @@ class CartController extends Controller
 
         $product = Product::findOrFail($request->product_id);
         $userId = Auth::id();
+
+        if (!$userId) {
+            return response()->json(['message' => 'Unauthenticated.'], 401);
+        }
 
         $cartItem = CartItem::where('user_id', $userId)
             ->where('product_id', $product->id)
@@ -38,25 +44,51 @@ class CartController extends Controller
             ]);
         }
 
-        return response()->json(['message' => 'Product added to cart successfully']);
+        // return response()->json(['message' => 'Product added to cart successfully']);
+        return Inertia::location(url()->previous()); // this acts like a soft redirect
+
+        // return redirect()->back()->with('message', 'Cart item updated successfully');
     }
 
-    // Update cart item quantity
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'quantity' => 'required|integer|min:1',
-        ]);
+        // $request->validate([
+        //     'quantity' => 'required|integer|min:1',
+        // ]);
 
         $cartItem = CartItem::where('id', $id)
             ->where('user_id', Auth::id())
             ->firstOrFail();
 
-        $cartItem->quantity = $request->quantity;
+        if ($request->type === 'increase') {
+            $cartItem->quantity += 1;
+        } elseif ($request->type === 'decrease' && $cartItem->quantity > 1) {
+            $cartItem->quantity -= 1;
+        }
+        
+        // $cartItem->quantity = $request->quantity;
         $cartItem->save();
+        return back(); 
 
-        return response()->json(['message' => 'Cart item updated successfully']);
+
     }
+
+    public function getCartItems()
+    {
+        $userId = Auth::id();
+
+        if (!$userId) {
+            return response()->json(['message' => 'Unauthenticated.'], 401);
+        }
+    
+        $cartItems = CartItem::with('product')
+            ->where('user_id', $userId)
+            ->get();
+    
+        return response()->json(['cartItems' => $cartItems]);
+    }
+
+
 
     // Delete cart item
     public function destroy($id)
@@ -67,6 +99,6 @@ class CartController extends Controller
 
         $cartItem->delete();
 
-        return response()->json(['message' => 'Cart item removed']);
+        return redirect()->back()->with('message', 'Cart item updated successfully');
     }
 }
