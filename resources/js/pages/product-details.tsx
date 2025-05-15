@@ -21,7 +21,7 @@ interface Product {
     images: string[];
     colors: string[];
     sizes: string[];
-    inStock: boolean;
+    in_stock: boolean;
 }
 
 const ProductDetails = ({ product, similarProducts }: { product: Product; similarProducts: SimilarProduct }) => {
@@ -136,9 +136,9 @@ const ProductDetails = ({ product, similarProducts }: { product: Product; simila
                                     )}
                                 </div>
                                 <div className="flex items-center">
-                                    <div className={`h-3 w-3 rounded-full ${product.inStock ? 'bg-green-500' : 'bg-red-500'} mr-2`}></div>
-                                    <p className={`text-sm ${product.inStock ? 'text-green-700' : 'text-red-700'}`}>
-                                        {product.inStock ? 'In Stock' : 'Out of Stock'}
+                                    <div className={`h-3 w-3 rounded-full ${product.in_stock ? 'bg-green-500' : 'bg-red-500'} mr-2`}></div>
+                                    <p className={`text-sm ${product.in_stock ? 'text-green-700' : 'text-red-700'}`}>
+                                        {product.in_stock ? 'In Stock' : 'Out of Stock'}
                                     </p>
                                 </div>
                             </div>

@@ -21,13 +21,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Inertia::share([
-            'shared.cartItems' => function () {
-              if (! auth()->check()) return [];
-              return CartItem::with('product')
-                  ->where('user_id', auth()->id())
-                  ->get();
-            },
-          ]);
+        // Inertia::share([
+        //     'shared.cartItems' => function () {
+        //       if (! auth()->check()) return [];
+        //       return CartItem::with('product')
+        //           ->where('user_id', auth()->id())
+        //           ->get();
+        //     },
+        //   ]);
     }
 }
