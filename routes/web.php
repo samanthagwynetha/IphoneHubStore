@@ -25,7 +25,8 @@ Route::get('/Allproducts', [HomeController::class,'getproducts'])->name('product
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/store', function () {
-        return Inertia::render('resources/js/components/frontend/StorePage.tsx');
+        // return Inertia::render('resources/js/components/frontend/StorePage.tsx');
+        return Inertia::render('Store/Index');
     })->name('store.index');
 });
 
