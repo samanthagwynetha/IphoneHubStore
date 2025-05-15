@@ -7,8 +7,12 @@ import { IoLogoApple } from "react-icons/io5";
 
 import { Input } from '@/components/ui/input';
 import { Sheet, SheetClose, SheetContent, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import { ModeToggle } from '../mode-togle';
+
+type PageProps = {
+    auth: { user: { id: number; name: string } | null }
+  }
 
 // Sample cart items for demonstration
 const initialCartItems = [
@@ -28,7 +32,8 @@ const initialCartItems = [
     },
 ];
 
-export default function ShopHeader() {
+export default function ShopHeader({ children }: { children: React.ReactNode }) {
+    const { auth } = usePage<PageProps>().props;
     const [cartItems, setCartItems] = useState(initialCartItems);
     const [isScrolled, setIsScrolled] = useState(false);
 
@@ -97,12 +102,24 @@ export default function ShopHeader() {
                     {/* Actions */}
                     <div className="flex items-center gap-1 md:gap-6">
                         <ModeToggle />
+                        {auth.user ? 
+                        
+                        (
                         <Link
+                            method="post" href={route('logout')}
+                            className="inline-block rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
+                        >
+                        Logout
+                        </Link>
+                        )
+                        :
+                        (<Link
                             href={route('login')}
                             className="inline-block rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
                         >
                             Login
-                        </Link>
+                        </Link>)
+                        }
                         {/* Shopping Cart */}
                         <Sheet>
                             <SheetTrigger asChild>
