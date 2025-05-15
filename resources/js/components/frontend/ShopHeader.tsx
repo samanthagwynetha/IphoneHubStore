@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Sheet, SheetClose, SheetContent, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Link, usePage } from '@inertiajs/react';
 import { ModeToggle } from '../mode-togle';
+import { LuSearch } from "react-icons/lu";
 
 type PageProps = {
     auth: { user: { id: number; name: string } | null }
@@ -68,6 +69,24 @@ export default function ShopHeader({ children }: { children: React.ReactNode }) 
     const calculateTotal = () => {
         return cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
     };
+    const [showSearch, setShowSearch] = useState(false)
+
+    const navitems = ['Store', 'About']
+
+    const NavCont =({}) => {
+    const { url } =usePage();
+    return (
+        <ul className="flex flex-row items-center gap-6 text-[#86868b] text-sm">
+      {navitems.map((item) => (
+        <li key={item} className="flex flex-row hover:text-white duration-200">
+          <Link href={item === 'Store' ? '/store' : '/'} className={url === '/' ? '' : ''}>
+            {item}
+          </Link>
+        </li>
+      ))}
+    </ul>
+    )
+}
 
     return (
         <header className={`sticky top-0 z-50 w-full border-b transition-all duration-300 ${isScrolled ? 'shadow-md' : ''}`}>
@@ -85,22 +104,27 @@ export default function ShopHeader({ children }: { children: React.ReactNode }) 
                         </Link>
                     </div>
 
-                    {/* Search bar - directly in the navbar */}
-                    <div className="mx-8 hidden max-w-xl flex-1 md:flex">
-                        <div className="relative flex w-full items-center">
-                            <Input
-                                type="search"
-                                placeholder="Search products, brands and categories"
-                                className="h-10 w-full rounded-r-none border-r-0"
-                            />
-                            <Button type="submit" className="h-10 rounded-l-none bg-[#000000] hover:bg-[#000000] dark:bg-white ">
-                                Search
-                            </Button>
-                        </div>
-                    </div>
+                <div className="absolute left-1/2 transform -translate-x-1/2 hidden md:flex">
+                    <NavCont />
+                </div>
+
+
 
                     {/* Actions */}
                     <div className="flex items-center gap-1 md:gap-6">
+                        <div className="relative flex  items-center gap-2">
+                            <Input
+                            type="search"
+                            placeholder="Search products, brands and categories"
+                            className={`h-10  rounded-full border transition-all duration-300 ${
+                                showSearch ? 'opacity-100 visible' : 'opacity-0 invisible'
+                            }`}
+                            />
+                            <LuSearch
+                            className="w-5 h-5 cursor-pointer hover:scale-110 duration-200"
+                            onClick={() => setShowSearch((prev) => !prev)}
+                            />
+                        </div>
                         <ModeToggle />
                         {auth.user ? 
                         

@@ -50,8 +50,12 @@ class RegisteredUserController extends Controller
         if ($user->role === 'admin') {
             return redirect()->route('dashboard');
         }
-        return redirect()->route('store.index'); //
+        return redirect()->route('/');
 
-        // return to_route('dashboard');
+//         if ($user->role === 'ADMIN') {
+//             return redirect('/dashboard');
+//         } else {
+//             return redirect('/');
+//         }
     }
 }

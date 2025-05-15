@@ -282,30 +282,29 @@ export const DropzoneFileInput: React.FC<FileInputProps> = ({ multiple = false, 
     );
 };
 
-// Demo component
-// const ImageUploadOne = () => {
-//     const [files1, setFiles1] = useState<File[]>([]);
-//     const [files2, setFiles2] = useState<File[]>([]);
+const ImageUploadOne = () => {
+    const [files1, setFiles1] = useState<File[]>([]);
+    const [files2, setFiles2] = useState<File[]>([]);
 
-//     return (
-//         <div className="mx-auto max-w-4xl p-6">
-//             <h1 className="mb-6 text-2xl font-bold">Image Upload Components</h1>
+    return (
+        <div className="mx-auto max-w-4xl p-6">
+            <h1 className="mb-6 text-2xl font-bold">Image Upload Components</h1>
 
-//             <div className="mb-8">
-//                 <h2 className="mb-3 text-lg font-semibold">1. Compact File Input</h2>
-//                 <div className="rounded border p-4">
-//                     <CompactFileInput multiple={true} maxSizeMB={1} onChange={setFiles1} />
-//                 </div>
-//             </div>
+            <div className="mb-8">
+                <h2 className="mb-3 text-lg font-semibold">1. Compact File Input</h2>
+                <div className="rounded border p-4">
+                    <CompactFileInput multiple={true} maxSizeMB={1} onChange={setFiles1} />
+                </div>
+            </div>
 
-//             <div className="mb-8">
-//                 <h2 className="mb-3 text-lg font-semibold">2. Dropzone File Input</h2>
-//                 <div className="rounded border p-4">
-//                     <DropzoneFileInput multiple={true} maxSizeMB={1} onChange={setFiles2} />
-//                 </div>
-//             </div>
-//         </div>
-//     );
-// };
+            <div className="mb-8">
+                <h2 className="mb-3 text-lg font-semibold">2. Dropzone File Input</h2>
+                <div className="rounded border p-4">
+                    <DropzoneFileInput multiple={true} maxSizeMB={1} onChange={setFiles2} />
+                </div>
+            </div>
+        </div>
+    );
+};
 
-// export default ImageUploadOne;
+export default ImageUploadOne;
