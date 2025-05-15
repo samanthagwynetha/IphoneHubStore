@@ -25,9 +25,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     return Inertia::render('store'); // This must match the filename in your Pages folder
     })->name('store');
 
-    Route::get('/dashboard/products',[ProductController::class,'list_products'] )->name('dashboard.products.index');
-    Route::post('/dashboard/products',[ProductController::class,'save_product'] )->name('dashboard.products.save');
-
+    Route::get('/dashboard/products', [ProductController::class, 'list_products'])->name('dashboard.products.index');
+    Route::post('/dashboard/products', [ProductController::class, 'save_product'])->name('dashboard.products.save');
+    Route::put('/dashboard/products/{product}', [ProductController::class, 'update'])->name('dashboard.products.update');
+    Route::delete('/dashboard/products/{product}', [ProductController::class, 'destroy'])->name('dashboard.products.destroy');
 
     Route::get('/dashboard/categories',[CategoryController::class,'list_categories'] )->name('dashboard.categories.index');
     Route::post('/dashboard/categories', [CategoryController::class,'save_category'])->name('dashboard.categories.save');

@@ -12,21 +12,39 @@ use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
-    public function list_products(){
-        $categories =Category::latest()->get();
-        $products =Product::with('category')->latest()->get();
+public function list_products(){
+    $categories = Category::latest()->get();
+    $products = Product::with('category')->latest()->get()->map(function ($product) {
+        return [
+            'id' => $product->id,
+            'name' => $product->name,
+            'slug' => $product->slug,
+            'category' => $product->category,
+            'image' => $product->image,
+            'images' => $product->images,
+            'price' => $product->price,
+            'original_price' => $product->original_price,
+            'colors' => $product->colors,
+            'features' => $product->features,
+            'stock' => $product->stock,
+            'description' => $product->description,
+            'is_featured' => $product->is_featured,
+            
+        ];
+    });
 
-        return Inertia::render('dashboard/products/index',[
-            'categories'=>$categories,
-            'products'=>$products
-        ]);
-    }
+    return Inertia::render('dashboard/products/index', [
+        'categories' => $categories,
+        'products' => $products
+    ]);
+}
     public function save_product(Request $request){
         $request->validate([
             'name'=>'string|required|max:255',
             'category_id'=>'string|required',
             'colors'=>'array|nullable',
             'features'=>'array|nullable',
+            'stock' => 'required|integer|min:0',
             'description'=>'string|nullable',
             'image'=>'image|nullable|max:2048',
             'images' => 'nullable|array',
@@ -61,6 +79,7 @@ class ProductController extends Controller
         'features'=>$request->features,
         'images'=>$images,
         'category_id'=>$request->category_id,
+        'stock' => $request->stock,
         ];
 
           $prod =Product::create($new_product);
@@ -211,7 +230,7 @@ class ProductController extends Controller
 
         $product->update($validated);
 
-        return redirect()->route('admin.products.index')
+        return redirect()->route('dashboard.products.index')
             ->with('success', 'Product updated successfully');
     }
 
@@ -234,7 +253,7 @@ class ProductController extends Controller
 
         $product->delete();
 
-        return redirect()->route('admin.products.index')
+        return redirect()->route('dashboard.products.index')
             ->with('success', 'Product deleted successfully');
     }
 
