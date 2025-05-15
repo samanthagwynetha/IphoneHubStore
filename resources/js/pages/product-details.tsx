@@ -2,10 +2,17 @@
 import SimilarProducts from '@/components/frontend/SimillarProducts';
 import ShopFrontLayout from '@/layouts/shop-front-layout';
 import { SimilarProduct } from '@/types/products';
+import { Link, router } from '@inertiajs/react';
+import { toast } from 'sonner';
+
+// import { Link, router, useForm } from '@inertiajs/react';
+
+
 // ProductDetail.tsx
 import { Check, ChevronRight, Heart, Share2, ShoppingCart } from 'lucide-react';
 
 import { useState } from 'react';
+import Products from './dashboard/products';
 
 // Types
 interface Product {
@@ -22,6 +29,7 @@ interface Product {
     sizes: string[];
     inStock: boolean;
 }
+
 
 // // Mock data
 // const product: Product = {
@@ -92,12 +100,36 @@ interface Product {
 //     },
 // ];
 
+
+
 const ProductDetails = ({ product, similarProducts }: { product: Product; similarProducts: SimilarProduct }) => {
+
     console.log(product, similarProducts);
     const [selectedImage, setSelectedImage] = useState(0);
     const [selectedColor, setSelectedColor] = useState(0);
 
     const [quantity, setQuantity] = useState(1);
+
+
+        const addToCart: React.MouseEventHandler = (e) => {
+            e.preventDefault();
+    
+            const data = {
+                product_id: product.id,
+                quantity: quantity,
+            };
+    
+            router.post('/addCart', data, {
+                preserveScroll: true,
+                onSuccess: () => {
+                    toast.success('Added to cart!');
+                },
+                onError: (errors) => {
+                    console.error(errors);
+                    toast.error('Failed to add to cart.');
+                },
+            });
+        };
 
     return (
         <ShopFrontLayout>
@@ -234,7 +266,7 @@ const ProductDetails = ({ product, similarProducts }: { product: Product; simila
                         </div>
 
                         <div className="flex space-x-4">
-                            <button className="flex-1 rounded-md bg-indigo-600 px-4 py-3 text-sm font-medium text-white transition-all duration-200 hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none">
+                            <button onClick={addToCart} className="flex-1 rounded-md bg-indigo-600 px-4 py-3 text-sm font-medium text-white transition-all duration-200 hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none">
                                 <div className="flex items-center justify-center">
                                     <ShoppingCart className="mr-2 h-5 w-5" />
                                     Add to Cart
