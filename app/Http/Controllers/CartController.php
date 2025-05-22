@@ -99,6 +99,10 @@ class CartController extends Controller
 
         $cartItem->delete();
 
-        return redirect()->back()->with('message', 'Cart item updated successfully');
+        // return redirect()->back()->with('message', 'Cart item updated successfully');
+        return back(); 
+        // return response()->noContent();
+
+
     }
 }

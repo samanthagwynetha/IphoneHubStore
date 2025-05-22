@@ -42,17 +42,44 @@ import { CompactFileInput } from '../FormInputs/ImageUploadInput';
 import InputError from '../input-error';
 import { Checkbox } from '../ui/checkbox';
 import { Textarea } from '../ui/textarea';
+import { useEffect } from 'react';
 
-export type Product = {
-    id: string;
+// export type Product = {
+//     id: string;
+//     name: string;
+//     category: CategoryItem;
+//     salesCount: number;
+//     image: string;
+//     stock: number;
+//     price: number;
+//     status: 'in-stock' | 'out-stock';
+// };
+
+export interface Product {
+    id: number;
     name: string;
+    slug: string;
     category: CategoryItem;
-    salesCount: number;
-    image: string;
-    stock: number;
     price: number;
-    status: 'in-stock' | 'out-stock';
-};
+    original_price: number;
+    description: string;
+    features: string;
+    image: string | null;
+    images: string | null;
+    colors: string;
+    is_featured: boolean;
+    in_stock: boolean;
+}
+
+// export interface CategoryItem {
+//     id: number;
+//     name: string;
+//     slug: string;
+//     image: string;
+//     description: string;
+//     color: string;
+// }
+
 
 export default function ProductsDataTable({
     categories,
@@ -68,18 +95,52 @@ export default function ProductsDataTable({
     const [showEditDialog, setShowEditDialog] = React.useState(false);
     const [productToEdit, setProductToEdit] = React.useState<Product | null>(null);
     const [editImages, setEditImages] = React.useState<File[]>([]);
-    const { data: editData, setData: setEditData, processing: editProcessing, errors: editErrors, reset: resetEdit } = useForm({
+
+    React.useEffect(() => {
+        setEditData('image', editImages[0]);
+        setEditData('images', editImages);
+      }, [editImages]);
+
+    const {
+        data: editData,
+        setData: setEditData,
+        processing: editProcessing,
+        errors: editErrors,
+        reset: resetEdit,
+      } = useForm<{
+        name: string;
+        category_id: number;
+        colors: string;
+        price: number;
+        original_price: number;
+        features: string;
+        description: string;
+        is_featured: boolean;
+        image: File | null;
+        images: File[] | null;
+      }>({
         name: '',
+        category_id: 0,
         colors: '',
         price: 0,
         original_price: 0,
         features: '',
         description: '',
-        is_featured: false,
-        category_id: '',
+        is_featured: false, // default value is false, but type is boolean
         image: null,
         images: null,
-    });
+      });
+
+    useEffect(() => {
+        console.log('productToEdit');
+        console.log(productToEdit);
+    }, [productToEdit]);
+
+    useEffect(() => {
+        console.log('editData');
+        console.log(editData);
+    }, [editData]);
+
 
     // --- Table columns
     const columns: ColumnDef<Product>[] = [
@@ -153,13 +214,13 @@ export default function ProductsDataTable({
                             setProductToEdit(row.original);
                             setEditData({
                                 name: row.original.name,
-                                colors: '', // Fill with actual data if available
+                                colors: row.original.colors, 
                                 price: row.original.price,
-                                original_price: row.original.price,
-                                features: '', // Fill with actual data if available
-                                description: '', // Fill with actual data if available
-                                is_featured: false, // Fill with actual data if available
-                                category_id: row.original.category?.id?.toString() || '',
+                                original_price: row.original.original_price,
+                                features: row.original.features, // Fill with actual data if available
+                                description: row.original.description, // Fill with actual data if available
+                                is_featured: row.original.is_featured, // Fill with actual data if available
+                                category_id: row.original.category?.id,
                                 image: null,
                                 images: null,
                             });
@@ -169,7 +230,7 @@ export default function ProductsDataTable({
                         <Pencil className="h-4 w-4" />
                         <span className="sr-only">Edit</span>
                     </Button>
-                    <Button variant="ghost" size="icon" className="text-destructive h-8 w-8">
+                    <Button variant="ghost" size="icon" className="text-destructive h-8 w-8" onClick={()=>{handleDelete(row.original.id)}}>
                         <Trash className="h-4 w-4" />
                         <span className="sr-only">Delete</span>
                     </Button>
@@ -233,31 +294,40 @@ export default function ProductsDataTable({
 
     const submit: React.FormEventHandler = (e) => {
         e.preventDefault();
+
         data.image = images[0];
         data.images = images;
         data.colors = typeof data.colors === 'string' ? data.colors.split(',') : data.colors;
         data.features = typeof data.features === 'string' ? data.features.split(',') : data.features;
         data.category_id = Number(data.category_id);
+        
         router.post('/dashboard/products', data, {
-            onFinish: () => {
+            onSuccess: () => {
                 reset();
                 toast.success('Product Successfully');
+                setShowAddDialog(false);
             },
         });
     };
-
+    
     // --- Edit product form
     const submitEdit: React.FormEventHandler = (e) => {
         e.preventDefault();
         if (!productToEdit) return;
-        const updateData = {
-            ...editData,
-            image: editImages[0] || null,
-            images: editImages.length > 0 ? editImages : null,
-            category_id: Number(editData.category_id),
-        };
-        router.post(`/dashboard/products/${productToEdit.id}?_method=PUT`, updateData, {
-            onFinish: () => {
+    
+        data.name = editData.name;
+        data.colors = editData.colors;
+        data.image = editData.image;
+        data.description = editData.description;
+        data.is_featured = editData.is_featured;
+        data.price = editData.price;
+        data.original_price = editData.original_price;
+        data.features = editData.features;
+        data.images = editData.images;
+        data.category_id = editData.category_id;
+
+        router.post(`/dashboard/products/${productToEdit.id}`, data, {
+            onSuccess: () => {
                 resetEdit();
                 setShowEditDialog(false);
                 setProductToEdit(null);
@@ -266,6 +336,22 @@ export default function ProductsDataTable({
         });
     };
 
+    const handleDelete = async (id: number) => {
+        try {
+            await router.delete(`/dashboard/products/${id}`, {
+                onFinish: () => {
+                    toast.success('Product deleted successfully!');
+                },
+                onError: () => {
+                    toast.error('Failed to delete product');
+                }
+            });
+        } catch (error) {
+            console.error('Delete error:', error);
+            toast.error('Failed to delete product');
+        }
+    }
+    
     // --- Export to Excel
     const handleExportToExcel = () => {
         const exportData = table.getFilteredRowModel().rows.map((row) => {
@@ -274,9 +360,9 @@ export default function ProductsDataTable({
                 ID: rowData.id,
                 Name: rowData.name,
                 Category: rowData.category,
-                Status: rowData.status,
-                Stock: rowData.stock,
-                'Sales Count': rowData.salesCount,
+                // Status: rowData.,
+                // Stock: rowData.stock,
+                // 'Sales Count': rowData.salesCount,
                 Price: `$${rowData.price.toFixed(2)}`,
             };
         });
@@ -287,10 +373,11 @@ export default function ProductsDataTable({
     };
 
     // --- Total value
-    const totalValue = products.reduce((sum, product) => sum + product.price * product.stock, 0);
+    const totalValue = products.reduce((sum, product) => sum + product.price * 5, 0);
+    
     const formattedTotalValue = new Intl.NumberFormat('en-US', {
         style: 'currency',
-        currency: 'USD',
+        currency: 'PHP',
     }).format(totalValue);
 
     // --- Edit Dialog JSX
@@ -327,7 +414,7 @@ export default function ProductsDataTable({
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="edit-category">Select Category</Label>
-                                <Select onValueChange={value => setEditData('category_id', value)} value={editData.category_id}>
+                                <Select onValueChange={value => setEditData('category_id', Number(value))} value={String(editData.category_id)}>
                                     <SelectTrigger className="w-[180px]">
                                         <SelectValue placeholder="Category" />
                                     </SelectTrigger>
@@ -349,11 +436,11 @@ export default function ProductsDataTable({
                             </div>
                             <div className="items-top flex space-x-2">
                
-                            {/* <Checkbox
+                            <Checkbox
                                 checked={editData.is_featured}
                                 onCheckedChange={(value) => setEditData('is_featured', value as boolean)}
                                 id="edit-isFeatured"
-                            /> */}
+                            />
                                                         <div className="grid gap-1.5 leading-none">
                                     <label htmlFor="edit-isFeatured" className="text-sm leading-none font-medium">
                                         Is Featured
@@ -381,7 +468,7 @@ export default function ProductsDataTable({
                         </div>
                     </div>
                     <DialogFooter>
-                        <Button variant="outline" onClick={() => setShowEditDialog(false)}>
+                        <Button variant="outline"  type="button" onClick={() => setShowEditDialog(false)}>
                             Cancel
                         </Button>
                         <Button disabled={editProcessing} type="submit">
@@ -511,7 +598,7 @@ export default function ProductsDataTable({
                                         </div>
                                     </div>
                                     <DialogFooter>
-                                        <Button variant="outline" onClick={() => setShowAddDialog(false)}>
+                                        <Button variant="outline" type="button" onClick={() => setShowAddDialog(false)}>
                                             Cancel
                                         </Button>
                                         <Button disabled={processing} type="submit">
@@ -648,3 +735,4 @@ export default function ProductsDataTable({
         </Card>
     );
 }
+
