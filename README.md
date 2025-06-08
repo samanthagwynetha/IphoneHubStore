@@ -1,4 +1,4 @@
-# 🍏 iPhoneHub – E-Commerce Platform for New and Pre-Owned iPhones  
+# 🍎 iPhoneHub – E-Commerce Platform for New and Pre-Owned iPhones  
 
 iPhoneHub is a full-stack web-based e-commerce platform dedicated to selling both **brand-new** and **second-hand** iPhones. 
 It aims to provide a convenient, trustworthy, and user-friendly marketplace that caters to a wide range of customers—from tech enthusiasts chasing the latest Apple models to budget-conscious users exploring affordable, pre-owned options.  
@@ -32,7 +32,7 @@ By bridging premium and sustainable shopping choices, iPhoneHub promotes accessi
 
 ## 🚀 Getting Started
 
-## ⚙️ Prerequisites
+### ⚙️ Prerequisites
 
 - Node.js (v16+)
 - PHP 8.1+
@@ -64,18 +64,18 @@ npm run dev
 php artisan serve
 
 ## 📷Screenshots
-AUTHENTICATION
+### AUTHENTICATION
 ![LOGIN](./images/Login.png)
 ![REGISTRATION](./images/Registration.png)
-HOME
+### HOME
 ![HOME](./images/Homepage.png)
 ![PRODUCTS](./images/Products.png)
 ![ProductView](./images/ProductView.png)
-ORDER
+### ORDER
 ![Cart](./images/Cart.png)
 ![Checkout](./images/Checkout.png)
 ![Paypal](./images/Paypal.png)
-ADMIN
+### ADMIN
 ![productInventory](./images/productInventory.png)
 ![ProductCategory](./images/ProductCategory.png)
 
