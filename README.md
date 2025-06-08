@@ -42,6 +42,7 @@ By bridging premium and sustainable shopping choices, iPhoneHub promotes accessi
 
 
 SETUP 
+```bash
 git clone https://github.com/samanthagwynetha/IphoneHubStore.git  
 cd IphoneHubStore  
 composer install  
@@ -62,6 +63,7 @@ php artisan key:generate
 npm install
 npm run dev
 php artisan serve
+```
 
 ## 📷Screenshots
 ### AUTHENTICATION
